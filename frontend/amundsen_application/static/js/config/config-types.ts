@@ -36,6 +36,16 @@ export interface AppConfig {
   tableProfile: TableProfileConfig;
   tableQualityChecks: TableQualityChecksConfig;
   nestedColumns: NestedColumnConfig;
+  productTour: ToursConfig;
+}
+
+/**
+ * configExternal - If you choose to override one of the configs, you must provide the full type definition
+ * for configExternal
+ */
+
+export interface AppConfigExternal {
+  configExternal: AppConfig;
 }
 
 export interface AppConfigCustom {
@@ -63,6 +73,14 @@ export interface AppConfigCustom {
   tableProfile?: TableProfileConfig;
   tableQualityChecks?: TableQualityChecksConfig;
   nestedColumns?: NestedColumnConfig;
+  productTour?: ToursConfig;
+}
+
+/**
+ * Enable search results highlighting of matching metadata for a resource
+ */
+export interface ResourceHighlightConfig {
+  enableHighlight: boolean;
 }
 
 /**
@@ -109,6 +127,7 @@ interface CheckboxFilterOptions {
  *                      FilterOperationType.AND: a user can only select AND when entering multiple filter terms
  * helpText - An option string of text that will render in the filter UI for the filter category
  * type - The FilterType for this filter category
+ * defaultValue - if set the filter is applied to every search by default with the configured value
  */
 interface BaseFilterCategory {
   categoryId: string;
@@ -116,6 +135,14 @@ interface BaseFilterCategory {
   allowableOperation?: FilterOperationType;
   helpText?: string;
   type: FilterType;
+  defaultValue?: string[];
+}
+
+/**
+ * Interface for filter categories displayed as toggle
+ */
+interface ToggleFilterCategory extends BaseFilterCategory {
+  type: FilterType.TOGGLE_FILTER;
 }
 
 /**
@@ -129,14 +156,18 @@ interface CheckboxFilterCategory extends BaseFilterCategory {
 /**
  * Interface for filter categories displayed as an input text box
  */
-interface InputFilterCategory extends BaseFilterCategory {
+export interface InputFilterCategory extends BaseFilterCategory {
   type: FilterType.INPUT_SELECT;
 }
 
 /**
  * Configures filter categories for each resource
  */
-export type FilterConfig = (CheckboxFilterCategory | InputFilterCategory)[];
+export type FilterConfig = (
+  | CheckboxFilterCategory
+  | InputFilterCategory
+  | ToggleFilterCategory
+)[];
 
 /**
  * Configures the UI for a given entity source
@@ -195,6 +226,7 @@ interface BaseResourceConfig {
   filterCategories?: FilterConfig;
   supportedSources?: SourcesConfig;
   notices?: NoticesConfigType;
+  searchHighlight?: ResourceHighlightConfig;
 }
 
 interface TableResourceConfig extends BaseResourceConfig {
@@ -440,4 +472,61 @@ export interface TableQualityChecksConfig {
 export interface NestedColumnConfig {
   isEnabled: boolean;
   maxNestedColumns: number;
+}
+
+/**
+ * Configuration for all tours for the application
+ */
+export interface ToursConfig {
+  /**
+   * Path on the application where the tours will apply
+   */
+  [path: string]: TourConfig[];
+}
+
+/**
+ * Configuration for one instance of a Product tour
+ */
+export interface TourConfig {
+  /**
+   * Whether the tour is a tour of the page (false) or if it is a tour
+   * for a single feature inside the page
+   */
+  isFeatureTour: boolean;
+  /**
+   * Whether the tour will automatically show up on the first time the user
+   * visits the page.
+   */
+  isShownOnFirstVisit: boolean;
+  /**
+   * Whether there will be a button to start the tour at any time the user
+   * wants to see it again.
+   */
+  isShownProgrammatically: boolean;
+  /**
+   * The list of steps that the tour will show.
+   */
+  steps: TourStep[];
+}
+
+/**
+ * Describes a single step of the product tour
+ */
+export interface TourStep {
+  /**
+   * CSS selector for the element to highlight
+   */
+  target: string;
+  /**
+   * Title of the tour step (if any)
+   */
+  title?: string;
+  /**
+   * Content for the tour step
+   */
+  content: string;
+  /**
+   * Whether the step will show a beacon
+   */
+  disableBeacon?: boolean;
 }

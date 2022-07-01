@@ -44,16 +44,17 @@ export function getRelatedDashboardSlug(key: string): string {
  */
 export function processColumns(
   columns: TableColumn[],
+  tableKey: string,
   databaseId?: string
 ): TableColumn[] {
-  return columns.map((column, index) => {
+  return columns.map((column) => {
     const nestedType = parseNestedType(column.col_type, databaseId);
 
     return {
       ...column,
-      col_index: index,
+      key: tableKey + '/' + column.name,
       children:
-        nestedType && isNestedColumnsEnabled()
+        !column.type_metadata && nestedType && isNestedColumnsEnabled()
           ? convertNestedTypeToColumns(nestedType)
           : undefined,
     };
@@ -70,7 +71,11 @@ export function getTableDataFromResponseData(
     'owners',
     'tags',
   ]) as TableMetadata;
-  tableData.columns = processColumns(tableData.columns, tableData.database);
+  tableData.columns = processColumns(
+    tableData.columns,
+    tableData.key,
+    tableData.database
+  );
   return tableData;
 }
 
@@ -105,7 +110,38 @@ export function shouldSendNotification(user: PeopleUser): boolean {
  * Returns total column count, including nested columns
  */
 export function getColumnCount(columns: TableColumn[]) {
-  return columns.reduce((acc, column) => {
-    return acc + (column?.children?.length || 0);
-  }, columns.length);
+  return columns.reduce(
+    (acc, column) => acc + (column?.children?.length || 0),
+    columns.length
+  );
+}
+
+/**
+ * Given a type metadata key, returns the associated type metadata object
+ */
+export function getTypeMetadataFromKey(
+  tmKey: string,
+  tableData: TableMetadata
+) {
+  const tmNamePath = tmKey.replace(tableData.key + '/', '');
+
+  const [
+    columnName,
+    typeConstant, // eslint-disable-line @typescript-eslint/no-unused-vars
+    topLevelTmName, // eslint-disable-line @typescript-eslint/no-unused-vars
+    ...tmNames
+  ] = tmNamePath.split('/');
+
+  const column = tableData.columns.find((column) => column.name === columnName);
+
+  let typeMetadata = column?.type_metadata;
+  // Find the TypeMetadata object at each level corresponding to its name from the key path
+  tmNames.forEach((nextLevelTmName) => {
+    const nextTmObject = typeMetadata?.children?.find(
+      (child) => child.name === nextLevelTmName
+    );
+    typeMetadata = nextTmObject;
+  });
+
+  return typeMetadata;
 }
