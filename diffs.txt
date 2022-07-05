@@ -1,0 +1,2182 @@
+commit 60aac09d42375f36684b82b17fb24f6288b7ea82
+Author: Farbod Ahmadian <farbod.mazraehyazdi@carnext.com>
+Date:   Tue Jul 5 17:22:27 2022 +0430
+
+    feat: all DataChef commits
+
+diff --git a/Dockerfile.metadata.public b/Dockerfile.metadata.public
+index 5d59469a..b91436a4 100644
+--- a/Dockerfile.metadata.public
++++ b/Dockerfile.metadata.public
+@@ -28,5 +28,10 @@ ENV SQLALCHEMY_DATABASE_URI sqlite:///sessions.db
+ # FLASK_OIDC_CLIENT_ID - oidc client id
+ # FLASK_OIDC_CLIENT_SECRET - oidc client secret
+ 
++FROM base as gremlin-release
++
++RUN  pip3 install -e .&& \
++     pip3 install -e .[gremlin]
++
+ FROM base as release
+ RUN pip3 install -e .
+diff --git a/README.md b/README.md
+index 92fb0b94..9a737e17 100644
+--- a/README.md
++++ b/README.md
+@@ -40,13 +40,13 @@ Amundsen is a data discovery and metadata engine for improving the productivity
+ 
+ Amundsen is hosted by the [LF AI & Data Foundation](https://lfaidata.foundation/). It includes three microservices, one data ingestion library and one common library.
+ 
+-- [amundsenfrontendlibrary](/frontend): Frontend service which is a Flask application with a React frontend. <img src="https://badge.fury.io/py/amundsen-frontend.svg" />
+-- [amundsensearchlibrary](/search): Search service, which leverages Elasticsearch for search capabilities, is used to power frontend metadata searching. <img src="https://badge.fury.io/py/amundsen-search.svg" />
+-- [amundsenmetadatalibrary](/metadata): Metadata service, which leverages Neo4j or Apache Atlas as the persistent layer, to provide various metadata. <img src="https://badge.fury.io/py/amundsen-metadata.svg" />
+-- [amundsendatabuilder](/databuilder): Data ingestion library for building metadata graph and search index.
+-  Users could either load the data with [a python script](/databuilder/example/scripts/sample_data_loader.py) with the library
+-  or with an [Airflow DAG](/databuilder/example/dags) importing the library. <img src="https://badge.fury.io/py/amundsen-databuilder.svg" />
+-- [amundsencommon](/common): Amundsen Common library holds common codes among microservices in Amundsen. <img src="https://badge.fury.io/py/amundsen-common.svg" />
++- [amundsenfrontendlibrary](frontend): Frontend service which is a Flask application with a React frontend. <img src="https://badge.fury.io/py/amundsen-frontend.svg" />
++- [amundsensearchlibrary](search): Search service, which leverages Elasticsearch for search capabilities, is used to power frontend metadata searching. <img src="https://badge.fury.io/py/amundsen-search.svg" />
++- [amundsenmetadatalibrary](metadata): Metadata service, which leverages Neo4j or Apache Atlas as the persistent layer, to provide various metadata. <img src="https://badge.fury.io/py/amundsen-metadata.svg" />
++- [amundsendatabuilder](databuilder): Data ingestion library for building metadata graph and search index.
++  Users could either load the data with [a python script](https://github.com/amundsen-io/amundsen/blob/main/databuilder/example/scripts/sample_data_loader.py) with the library
++  or with an [Airflow DAG](https://github.com/amundsen-io/amundsen/tree/main/databuilder/example/dags) importing the library. <img src="https://badge.fury.io/py/amundsen-databuilder.svg" />
++- [amundsencommon](common): Amundsen Common library holds common codes among microservices in Amundsen. <img src="https://badge.fury.io/py/amundsen-common.svg" />
+ - [amundsengremlin](https://github.com/amundsen-io/amundsengremlin): Amundsen Gremlin library holds code used for converting model objects into vertices and edges in gremlin. It's used for loading data into an AWS Neptune backend. <img src="https://badge.fury.io/py/amundsen-gremlin.svg" />
+ - [amundsenrds](https://github.com/amundsen-io/amundsenrds): Amundsenrds contains ORM models to support relational database as metadata backend store in Amundsen. The schema in ORM models follows the logic of databuilder models. Amundsenrds will be used in databuilder and metadatalibrary for metadata storage and retrieval with relational databases.  <img src="https://badge.fury.io/py/amundsen-rds.svg" />
+ 
+@@ -92,15 +92,15 @@ Please note that the mock images only served as demonstration purpose.
+ ## Get Involved in the Community
+ 
+ Want help or want to help?
+-Use the button in our [header](https://github.com/amundsen-io/amundsen#readme) to join our slack channel. Contributions are also more than welcome! As explained in [CONTRIBUTING.md](./CONTRIBUTING.md) there are many ways to contribute, it does not all have to be code with new features and bug fixes, also documentation, like FAQ entries, bug reports, blog posts sharing experiences etc. all help move Amundsen forward. If you find a security vulnerability, [please follow this guide](./SECURITY.md).
++Use the button in our [header](https://github.com/amundsen-io/amundsen#readme) to join our slack channel. Contributions are also more than welcome! As explained in [CONTRIBUTING.md](https://github.com/amundsen-io/amundsen/blob/main/CONTRIBUTING.md) there are many ways to contribute, it does not all have to be code with new features and bug fixes, also documentation, like FAQ entries, bug reports, blog posts sharing experiences etc. all help move Amundsen forward. If you find a security vulnerability, [please follow this guide](https://github.com/amundsen-io/amundsen/blob/main/SECURITY.md).
+ 
+ ## Getting Started
+ 
+-Please visit the Amundsen installation documentation for a [quick start](./docs/installation.md) to bootstrap a default version of Amundsen with dummy data.
++Please visit the Amundsen installation documentation for a [quick start](https://www.amundsen.io/amundsen/installation/) to bootstrap a default version of Amundsen with dummy data.
+ 
+ ## Architecture Overview
+ 
+-Please visit [Architecture](./docs/architecture.md) for Amundsen architecture overview.
++Please visit [Architecture](https://www.amundsen.io/amundsen/architecture/) for Amundsen architecture overview.
+ 
+ ## Supported Entities
+ 
+@@ -113,6 +113,7 @@ Please visit [Architecture](./docs/architecture.md) for Amundsen architecture ov
+ ### Table Connectors
+ 
+ - [Amazon Athena](https://aws.amazon.com/athena/)
++- [Amazon EventBridge](https://aws.amazon.com/eventbridge/)
+ - [Amazon Glue](https://aws.amazon.com/glue/) and anything built over it
+ - [Amazon Redshift](https://aws.amazon.com/redshift/)
+ - [Apache Cassandra](https://cassandra.apache.org/)
+@@ -153,11 +154,11 @@ Amundsen can also connect to any database that provides `dbapi` or `sql_alchemy`
+ 
+ ## Installation
+ 
+-Please visit [Installation guideline](./docs/installation.md) on how to install Amundsen.
++Please visit [Installation guideline](https://www.amundsen.io/amundsen/installation/) on how to install Amundsen.
+ 
+ ## Roadmap
+ 
+-Please visit [Roadmap](./docs/roadmap.md) if you are interested in Amundsen upcoming roadmap items.
++Please visit [Roadmap](https://www.amundsen.io/amundsen/roadmap/) if you are interested in Amundsen upcoming roadmap items.
+ 
+ ## Blog Posts and Interviews
+ 
+@@ -263,6 +264,7 @@ Currently **officially** using Amundsen:
+ 1. [Snap](https://www.snap.com/en-US)
+ 1. [Square](https://squareup.com/us/en)
+ 1. [Tile](https://www.thetileapp.com)
++1. [WePay](https://go.wepay.com/)
+ 1. [WeTransfer](https://wetransfer.com)
+ 1. [Workday](https://www.workday.com/en-us/homepage.html)
+ 
+diff --git a/amundsengremlin b/amundsengremlin
+index ac5c512e..77a0c0a1 160000
+--- a/amundsengremlin
++++ b/amundsengremlin
+@@ -1 +1 @@
+-Subproject commit ac5c512e962db4e7f37fa88c955181fcae2edb9e
++Subproject commit 77a0c0a1162bdc1b98907950c3dbe59979af8e10
+diff --git a/amundsenrds b/amundsenrds
+index 4509bb01..bd47453d 160000
+--- a/amundsenrds
++++ b/amundsenrds
+@@ -1 +1 @@
+-Subproject commit 4509bb01877488ea5873a7debe29435142cceee5
++Subproject commit bd47453df4bb9d1afe59b0231829a8a7a831f283
+diff --git a/databuilder/README.md b/databuilder/README.md
+index 7319b918..90bfbd73 100644
+--- a/databuilder/README.md
++++ b/databuilder/README.md
+@@ -156,7 +156,9 @@ Before running make sure you have a working AWS profile configured and have acce
+ ```python
+ job_config = ConfigFactory.from_dict({
+     'extractor.glue.{}'.format(GlueExtractor.CLUSTER_KEY): cluster_identifier_string,
+-    'extractor.glue.{}'.format(GlueExtractor.FILTER_KEY): []})
++    'extractor.glue.{}'.format(GlueExtractor.FILTER_KEY): [],
++    'extractor.glue.{}'.format(GlueExtractor.PARTITION_BADGE_LABEL_KEY): label_string,
++})
+ job = DefaultJob(
+     conf=job_config,
+     task=DefaultTask(
+@@ -165,6 +167,8 @@ job = DefaultJob(
+ job.launch()
+ ```
+ 
++Optionally, you may add a partition badge label to the configuration. This will apply that label to all columns that are identified as partition keys in Glue.
++
+ If using the filters option here is the input format. For more information on filters visit [link](https://docs.aws.amazon.com/glue/latest/webapi/API_PropertyPredicate.html)
+ ```
+ [
+@@ -1632,6 +1636,24 @@ job = DefaultJob(conf=job_config,
+ job.launch()
+ ```
+ 
++#### [EventBridgeExtractor](https://github.com/amundsen-io/amundsen/blob/main/databuilder/databuilder/extractor/eventbridge_extractor.py "EventBridgeExtractor")
++
++An extractor that extracts schema metadata from AWS EventBridge schema registries.
++
++A sample job config is shown below.
++
++```python
++job_config = ConfigFactory.from_dict({
++    f"extractor.eventbridge.{EventBridgeExtractor.REGION_NAME_KEY}": "aws_region",
++    f"extractor.eventbridge.{EventBridgeExtractor.REGISTRY_NAME_KEY}": "eventbridge_schema_registry_name",
++})
++job = DefaultJob(
++    conf=job_config,
++    task=DefaultTask(
++        extractor=EventBridgeExtractor(),
++        loader=AnyLoader()))
++job.launch()
++```
+ 
+ ## List of transformers
+ 
+@@ -1678,6 +1700,28 @@ Adds the same set of tags to all tables produced by the job.
+ #### [GenericTransformer](./databuilder/transformer/generic_transformer.py)
+ Transforms dictionary based on callback function that user provides.
+ 
++#### [ComplexTypeTransformer](./databuilder/transformer/complex_type_transformer.py)
++Transforms complex types for columns in a table by using a configured parsing function. The transformer takes a `TableMetadata` object and iterates over its list of `ColumnMetadata` objects. The configured parser takes each column as input and sets the column's `type_metadata` field with the parsed results contained in a `TypeMetadata` object.
++
++**If you use Hive as a data store:**<br>
++Configure this transformer with the [Hive parser](./databuilder/utils/hive_complex_type_parser.py).
++
++**If you do not use Hive as a data store:**<br>
++You will need to write a custom parsing function for transforming column type strings into nested `TypeMetadata` objects. You are free to use the [Hive parser](./databuilder/utils/hive_complex_type_parser.py) as a starting point. You can also look online to try to find either a grammar or some OSS prior art, as writing a parser from scratch can get a little involved. We strongly recommend leveraging PyParsing instead of regex, etc.
++
++New parsing functions should take the following arguments:
++- Column type string
++- Column name
++- `ColumnMetadata` object itself
++
++Within the parsing function, [TypeMetadata](./databuilder/models/type_metadata.py) objects should be created by passing its name, parent object, and type string.
++
++**Things to know about [TypeMetadata](./databuilder/models/type_metadata.py)**<br>
++- If the existing subclasses do not cover all the required complex types, the base class can be extended to create any new ones that are needed.
++- Each new subclass should implement a `is_terminal_type` function, which allows the node and relation iterators to check whether to continue creating the next nested level or to stop due to reaching a terminal node.
++- `ScalarTypeMetadata` is the default type class that represents a terminal state. This should be used to set any column's `type_metadata` when it is not a complex type, or for the innermost terminal state for any complex type. Having all the columns set the `type_metadata` field allows the frontend to know to use the correct nested column display.
++- Subclasses should set a `kind` field that specifies what kind of complex type they are. This is used by the frontend for specific type handling. For example, for arrays and maps a smaller row is inserted in the display table to differentiate them from named nested columns such as structs.
++
+ ## List of loader
+ #### [FsNeo4jCSVLoader](https://github.com/amundsen-io/amundsen/blob/main/databuilder/databuilder/loader/file_system_neo4j_csv_loader.py "FsNeo4jCSVLoader")
+ Write node and relationship CSV file(s) that can be consumed by Neo4jCsvPublisher. It assumes that the record it consumes is instance of Neo4jCsvSerializable.
+diff --git a/databuilder/databuilder/extractor/dbt_extractor.py b/databuilder/databuilder/extractor/dbt_extractor.py
+index 309b83af..2c34b02d 100644
+--- a/databuilder/databuilder/extractor/dbt_extractor.py
++++ b/databuilder/databuilder/extractor/dbt_extractor.py
+@@ -121,7 +121,7 @@ class DbtExtractor(Extractor):
+         except Exception:
+             try:
+                 with open(self._dbt_catalog, 'rb') as f:
+-                    self._dbt_catalog = json.load(f)
++                    self._dbt_catalog = json.loads(f.read().lower())
+             except Exception as e:
+                 raise InvalidDbtInputs(
+                     'Invalid content for a dbt catalog was provided. Must be a valid Python '
+@@ -141,7 +141,7 @@ class DbtExtractor(Extractor):
+         except Exception:
+             try:
+                 with open(self._dbt_manifest, 'rb') as f:
+-                    self._dbt_manifest = json.load(f)
++                    self._dbt_manifest = json.loads(f.read().lower())
+             except Exception as e:
+                 raise InvalidDbtInputs(
+                     'Invalid content for a dbt manifest was provided. Must be a valid Python '
+@@ -255,7 +255,7 @@ class DbtExtractor(Extractor):
+                     cluster=self._default_sanitize(manifest_content['database']),
+                     schema=self._default_sanitize(manifest_content['schema']),
+                     name=self._default_sanitize(manifest_content[self._model_name_key]),
+-                    is_view=catalog_content['metadata']['type'] == 'VIEW',
++                    is_view=catalog_content['metadata']['type'] == 'view',
+                     columns=tbl_columns,
+                     tags=tags,
+                     description=desc,
+@@ -306,7 +306,7 @@ class DbtExtractor(Extractor):
+         """
+         tbl_columns = []
+         for manifest_col_name, manifest_col_content in manifest_columns.items():
+-            catalog_col_content = catalog_columns.get(manifest_col_name.upper())
++            catalog_col_content = catalog_columns.get(manifest_col_name)
+ 
+             if catalog_col_content:
+                 col_desc = None
+diff --git a/databuilder/databuilder/extractor/eventbridge_extractor.py b/databuilder/databuilder/extractor/eventbridge_extractor.py
+new file mode 100644
+index 00000000..12acbfed
+--- /dev/null
++++ b/databuilder/databuilder/extractor/eventbridge_extractor.py
+@@ -0,0 +1,224 @@
++# Copyright Contributors to the Amundsen project.
++# SPDX-License-Identifier: Apache-2.0
++import logging
++from typing import (
++    Any,
++    Dict,
++    Iterator,
++    List,
++    Union,
++)
++
++import boto3
++import jsonref
++from pyhocon import ConfigFactory, ConfigTree
++
++from databuilder.extractor.base_extractor import Extractor
++from databuilder.models.table_metadata import ColumnMetadata, TableMetadata
++
++LOGGER = logging.getLogger(__name__)
++
++
++class EventBridgeExtractor(Extractor):
++    """
++    Extracts the latest version of all schemas from a given AWS EventBridge schema registry
++    """
++
++    REGION_NAME_KEY = "region_name"
++    REGISTRY_NAME_KEY = "registry_name"
++    DEFAULT_CONFIG = ConfigFactory.from_dict(
++        {REGION_NAME_KEY: "us-east-1", REGISTRY_NAME_KEY: "aws.events",}
++    )
++
++    def init(self, conf: ConfigTree) -> None:
++        conf = conf.with_fallback(EventBridgeExtractor.DEFAULT_CONFIG)
++
++        boto3.setup_default_session(
++            region_name=conf.get(EventBridgeExtractor.REGION_NAME_KEY)
++        )
++        self._schemas = boto3.client("schemas")
++
++        self._registry_name = conf.get(EventBridgeExtractor.REGISTRY_NAME_KEY)
++
++        self._extract_iter: Union[None, Iterator] = None
++
++    def extract(self) -> Union[TableMetadata, None]:
++        if not self._extract_iter:
++            self._extract_iter = self._get_extract_iter(self._registry_name)
++        try:
++            return next(self._extract_iter)
++        except StopIteration:
++            return None
++
++    def get_scope(self) -> str:
++        return "extractor.eventbridge"
++
++    def _get_extract_iter(self, registry_name: str) -> Iterator[TableMetadata]:
++        """
++        It gets all the schemas and yields TableMetadata
++        :return:
++        """
++        for schema_desc in self._get_raw_extract_iter(registry_name):
++            if "Content" not in schema_desc:
++                LOGGER.warning(
++                    f"skipped malformatted schema: {jsonref.dumps(schema_desc)}"
++                )
++                continue
++
++            content = jsonref.loads(schema_desc["Content"])
++
++            if content.get("openapi", "") == "3.0.0":  # NOTE: OpenAPI 3.0
++                title = content.get("info", {}).get("title", "")
++                for schema_name, schema in (
++                    content.get("components", {}).get("schemas", {}).items()
++                ):
++                    table = EventBridgeExtractor._build_table(
++                        schema,
++                        schema_name,
++                        registry_name,
++                        title,
++                        content.get("description", None),
++                    )
++
++                    if table is None:
++                        continue
++
++                    yield table
++            elif (
++                content.get("$schema", "") == "http://json-schema.org/draft-04/schema#"
++            ):  # NOTE: JSON Schema Draft 4
++                title = content.get("title", "")
++
++                for schema_name, schema in content.get("definitions", {}).items():
++                    table = EventBridgeExtractor._build_table(
++                        schema,
++                        schema_name,
++                        registry_name,
++                        title,
++                        schema.get("description", None),
++                    )
++
++                    if table is None:
++                        continue
++
++                    yield table
++
++                table = EventBridgeExtractor._build_table(
++                    content,
++                    "Root",
++                    registry_name,
++                    title,
++                    content.get("description", None),
++                )
++
++                if table is None:
++                    continue
++
++                yield table
++
++            else:
++                LOGGER.warning(
++                    f"skipped unsupported schema format: {jsonref.dumps(schema_desc)}"
++                )
++                continue
++
++    def _get_raw_extract_iter(self, registry_name: str) -> Iterator[Dict[str, Any]]:
++        """
++        Provides iterator of results row from schemas client
++        :return:
++        """
++        schemas_descs = self._search_schemas(registry_name)
++        return iter(schemas_descs)
++
++    def _search_schemas(self, registry_name: str) -> List[Dict[str, Any]]:
++        """
++        Get all schemas descriptions.
++        """
++        schemas_names = []
++        paginator = self._schemas.get_paginator("list_schemas")
++        for result in paginator.paginate(RegistryName=registry_name):
++            for schema in result["Schemas"]:
++                schemas_names.append(schema["SchemaName"])
++
++        schemas_descs = []
++        for schema_name in schemas_names:
++            schema_versions = []
++            paginator = self._schemas.get_paginator("list_schema_versions")
++            for result in paginator.paginate(
++                RegistryName=registry_name, SchemaName=schema_name
++            ):
++                schema_versions += result["SchemaVersions"]
++            latest_schema_version = EventBridgeExtractor._get_latest_schema_version(
++                schema_versions
++            )
++
++            schema_desc = self._schemas.describe_schema(
++                RegistryName=registry_name,
++                SchemaName=schema_name,
++                SchemaVersion=latest_schema_version,
++            )
++
++            schemas_descs.append(schema_desc)
++
++        return schemas_descs
++
++    @staticmethod
++    def _build_table(
++        schema: Dict[str, Any],
++        schema_name: str,
++        registry_name: str,
++        title: str,
++        description: str,
++    ):
++        columns = []
++        for i, (column_name, properties) in enumerate(
++            schema.get("properties", {}).items()
++        ):
++            columns.append(
++                ColumnMetadata(
++                    column_name,
++                    properties.get("description", None),
++                    EventBridgeExtractor._get_property_type(properties),
++                    i,
++                )
++            )
++
++        if len(columns) == 0:
++            LOGGER.warning(
++                f"skipped schema with primitive type: "
++                f"{schema_name}: {jsonref.dumps(schema)}"
++            )
++            return None
++
++        return TableMetadata(
++            "eventbridge", registry_name, title, schema_name, description, columns,
++        )
++
++    @staticmethod
++    def _get_latest_schema_version(schema_versions: List[Dict[str, Any]]) -> str:
++        versions = []
++        for info in schema_versions:
++            version = int(info["SchemaVersion"])
++            versions.append(version)
++        return str(max(versions))
++
++    @staticmethod
++    def _get_property_type(schema: Dict) -> str:
++        if "type" not in schema:
++            return "object"
++
++        if schema["type"] == "object":
++            properties = [
++                f"{name}:{EventBridgeExtractor._get_property_type(_schema)}"
++                for name, _schema in schema.get("properties", {}).items()
++            ]
++            if len(properties) > 0:
++                return "struct<" + ",".join(properties) + ">"
++            return "struct<object>"
++        elif schema["type"] == "array":
++            items = EventBridgeExtractor._get_property_type(schema.get("items", {}))
++            return "array<" + items + ">"
++        else:
++            if "format" in schema:
++                return f"{schema['type']}[{schema['format']}]"
++            return schema["type"]
+diff --git a/databuilder/databuilder/extractor/glue_extractor.py b/databuilder/databuilder/extractor/glue_extractor.py
+index 651c3625..fc9ab8b8 100644
+--- a/databuilder/databuilder/extractor/glue_extractor.py
++++ b/databuilder/databuilder/extractor/glue_extractor.py
+@@ -22,12 +22,15 @@ class GlueExtractor(Extractor):
+     MAX_RESULTS_KEY = 'max_results'
+     RESOURCE_SHARE_TYPE = 'resource_share_type'
+     REGION_NAME_KEY = "region"
++    PARTITION_BADGE_LABEL_KEY = "partition_badge_label"
++
+     DEFAULT_CONFIG = ConfigFactory.from_dict({
+         CLUSTER_KEY: 'gold',
+         FILTER_KEY: None,
+         MAX_RESULTS_KEY: 500,
+         RESOURCE_SHARE_TYPE: "ALL",
+-        REGION_NAME_KEY: None
++        REGION_NAME_KEY: None,
++        PARTITION_BADGE_LABEL_KEY: None,
+     })
+ 
+     def init(self, conf: ConfigTree) -> None:
+@@ -37,6 +40,7 @@ class GlueExtractor(Extractor):
+         self._max_results = conf.get(GlueExtractor.MAX_RESULTS_KEY)
+         self._resource_share_type = conf.get(GlueExtractor.RESOURCE_SHARE_TYPE)
+         self._region_name = conf.get(GlueExtractor.REGION_NAME_KEY)
++        self._partition_badge_label = conf.get(GlueExtractor.PARTITION_BADGE_LABEL_KEY)
+         if self._region_name is not None:
+             self._glue = boto3.client('glue', region_name=self._region_name)
+         else:
+@@ -62,17 +66,25 @@ class GlueExtractor(Extractor):
+         for row in self._get_raw_extract_iter():
+             columns, i = [], 0
+ 
+-            # Check if StorageDescriptor field is available in order to not break on resource links
+-            if not row.get('StorageDescriptor'):
++            if 'StorageDescriptor' not in row:
+                 continue
+ 
+-            for column in row['StorageDescriptor']['Columns'] \
+-                    + row.get('PartitionKeys', []):
++            for column in row['StorageDescriptor']['Columns']:
++                columns.append(ColumnMetadata(
++                    name=column["Name"],
++                    description=column.get("Comment"),
++                    col_type=column["Type"],
++                    sort_order=i,
++                ))
++                i += 1
++
++            for column in row.get('PartitionKeys', []):
+                 columns.append(ColumnMetadata(
+-                    column['Name'],
+-                    column['Comment'] if 'Comment' in column else None,
+-                    column['Type'],
+-                    i
++                    name=column["Name"],
++                    description=column.get("Comment"),
++                    col_type=column["Type"],
++                    sort_order=i,
++                    badges=[self._partition_badge_label] if self._partition_badge_label else None,
+                 ))
+                 i += 1
+ 
+diff --git a/databuilder/databuilder/extractor/neptune_search_data_extractor.py b/databuilder/databuilder/extractor/neptune_search_data_extractor.py
+index def4daef..733b7e50 100644
+--- a/databuilder/databuilder/extractor/neptune_search_data_extractor.py
++++ b/databuilder/databuilder/extractor/neptune_search_data_extractor.py
+@@ -67,7 +67,7 @@ def _table_search_query(graph: GraphTraversalSource, tag_filter: str) -> List[Di
+         __.constant('')
+     ))  # schema_description
+     traversal = traversal.by('name')  # name
+-    traversal = traversal.by(T.id)  # key
++    traversal = traversal.by('key')  # key
+     traversal = traversal.by(__.coalesce(
+         __.out(DescriptionMetadata.DESCRIPTION_RELATION_TYPE).values('description'),
+         __.constant('')
+@@ -121,19 +121,43 @@ def _user_search_query(graph: GraphTraversalSource, tag_filter: str) -> List[Dic
+         'total_follow'
+     )
+     traversal = traversal.by('email')  # email
+-    traversal = traversal.by('first_name')  # first_name
+-    traversal = traversal.by('last_name')  # last_name
+-    traversal = traversal.by('full_name')  # full_name
+-    traversal = traversal.by('github_username')  # github_username
+-    traversal = traversal.by('team_name')  # team_name
+-    traversal = traversal.by('employee_type')  # employee_type
++    traversal = traversal.by(__.coalesce(
++        __.values('first_name'),
++        __.constant('')
++    )) # first_name
++    traversal = traversal.by(__.coalesce(
++        __.values('last_name'),
++        __.constant('')
++    ))  # last_name
++    traversal = traversal.by(__.coalesce(
++        __.values('full_name'),
++        __.constant('')
++    ))  # full_name
++    traversal = traversal.by(__.coalesce(
++        __.values('github_username'),
++        __.constant('')
++    ))  # github_username
++    traversal = traversal.by(__.coalesce(
++        __.values('team_name'),
++        __.constant('')
++    ))  # team_name
++    traversal = traversal.by(__.coalesce(
++        __.values('employee_type'),
++        __.constant('')
++    ))  # employee_type
+     traversal = traversal.by(__.coalesce(
+         __.out(User.USER_MANAGER_RELATION_TYPE).values('email'),
+         __.constant(''))
+     )  # manager_email
+-    traversal = traversal.by('slack_id')  # slack_id
++    traversal = traversal.by(__.coalesce(
++        __.values('slack_id'),
++        __.constant('')
++    ))  # slack_id
+     traversal = traversal.by('is_active')  # is_active
+-    traversal = traversal.by('role_name')  # role_name
++    traversal = traversal.by(__.coalesce(
++        __.values('role_name'),
++        __.constant('')
++    ))  # role_name
+     traversal = traversal.by(__.coalesce(
+         __.outE(READ_RELATION_TYPE).values('read_count'),
+         __.constant(0)
+diff --git a/databuilder/databuilder/task/search/__init__.py b/databuilder/databuilder/task/search/__init__.py
+new file mode 100644
+index 00000000..f3145d75
+--- /dev/null
++++ b/databuilder/databuilder/task/search/__init__.py
+@@ -0,0 +1,2 @@
++# Copyright Contributors to the Amundsen project.
++# SPDX-License-Identifier: Apache-2.0
+diff --git a/databuilder/databuilder/task/search/document_mappings.py b/databuilder/databuilder/task/search/document_mappings.py
+new file mode 100644
+index 00000000..6969899e
+--- /dev/null
++++ b/databuilder/databuilder/task/search/document_mappings.py
+@@ -0,0 +1,147 @@
++# Copyright Contributors to the Amundsen project.
++# SPDX-License-Identifier: Apache-2.0
++
++from typing import Dict
++
++from elasticsearch_dsl import (
++    Date, Document, Keyword, RankFeatures, Text, analysis, token_filter, tokenizer,
++)
++
++
++class Tokenizer:
++    # separate tokens on all non-alphanumeric characters and whitespace
++    alphanum_tokenizer = tokenizer("alphanum_tokenizer",
++                                   type="pattern",
++                                   pattern="[^a-zA-Z0-9]")
++
++
++class Filter:
++    english_stop = token_filter("english_stop", type="stop", stopwords="_english_")
++
++    # uses default porter stemmer
++    english_stemmer = token_filter("english_stemmer", type="stemmer", language="english")
++
++    english_possessive_stemmer = token_filter("english_possessive_stemmer",
++                                              type="stemmer",
++                                              language="possessive_english")
++
++
++class Analyzer:
++    # tokenizes and makes the tokens lowercase
++    general_analyzer = analysis.analyzer("general_analyzer",
++                                         tokenizer=Tokenizer.alphanum_tokenizer,
++                                         filter=["lowercase"])
++
++    # provides light stemming for english tokens
++    stemming_analyzer = analysis.analyzer("stemming_analyzer",
++                                          tokenizer=Tokenizer.alphanum_tokenizer,
++                                          filter=["lowercase", "kstem"])
++
++    # uses grammar based tokenization before analysis (e.g. "it's fine" -> ["it's", "fine"])
++    english_analyzer = analysis.analyzer("english_analyzer",
++                                         tokenizer=tokenizer("standard_tokenizer",
++                                                             type="standard"),
++                                         filter=[Filter.english_possessive_stemmer,
++                                                 "lowercase",
++                                                 Filter.english_stop,
++                                                 Filter.english_stemmer])
++
++    # tokenizes for words and numbers, removing all other characters before analysis
++    # (e.g. "it's fine" -> ["it", "s", "fine"] or "hello_word" -> ["hello", "world"])
++    alphanum_analyzer = analysis.analyzer("alphanum_analyzer",
++                                          tokenizer=Tokenizer.alphanum_tokenizer,
++                                          filter=[Filter.english_possessive_stemmer,
++                                                  "lowercase",
++                                                  Filter.english_stop,
++                                                  Filter.english_stemmer])
++
++# Resource Mappings
++
++
++class SearchableResource(Document):
++    # For better understanding of field type rationale read "Mapping unstructured content"
++    # https://www.elastic.co/guide/en/elasticsearch/reference/current/keyword.html#wildcard-field-type
++    key = Text(required=True,
++               fields={"keyword": Keyword()},
++               analyzer=Analyzer.general_analyzer)
++    name = Text(required=True,
++                fields={"keyword": Keyword()},
++                analyzer=Analyzer.stemming_analyzer)
++    description = Text(analyzer=Analyzer.english_analyzer,
++                       fields={"alphanumeric": Text(analyzer=Analyzer.alphanum_analyzer)})
++    badges = Text(multi=True,
++                  fields={"keyword": Keyword()},
++                  analyzer=Analyzer.general_analyzer)
++    tags = Text(multi=True,
++                fields={"keyword": Keyword()},
++                analyzer=Analyzer.general_analyzer)
++    usage = RankFeatures()  # values can be used to boost document search score
++    last_updated_timestamp = Date()
++
++
++class Table(SearchableResource):
++    display_name = Text(required=True,
++                        fields={"keyword": Keyword()},
++                        analyzer=Analyzer.general_analyzer)
++    database = Text(required=True,
++                    fields={"keyword": Keyword()},
++                    analyzer=Analyzer.general_analyzer)
++    cluster = Text(required=True,
++                   fields={"keyword": Keyword()},
++                   analyzer=Analyzer.general_analyzer)
++    schema = Text(required=True,
++                  fields={"keyword": Keyword()},
++                  analyzer=Analyzer.stemming_analyzer)
++    columns = Text(multi=True,
++                   fields={"keyword": Keyword()},
++                   analyzer=Analyzer.stemming_analyzer)
++    column_descriptions = Text(multi=True,
++                               fields={
++                                   "alphanumeric": Text(analyzer=Analyzer.alphanum_analyzer)},
++                               analyzer=Analyzer.english_analyzer)
++
++
++class Dashboard(SearchableResource):
++    group_name = Text(required=True,
++                      fields={"keyword": Keyword()},
++                      analyzer=Analyzer.stemming_analyzer)
++    group_description = Text(analyzer=Analyzer.english_analyzer)
++    query_names = Text(multi=True,
++                       fields={"keyword": Keyword()},
++                       analyzer=Analyzer.stemming_analyzer)
++    chart_names = Text(multi=True,
++                       fields={"keyword": Keyword()},
++                       analyzer=Analyzer.stemming_analyzer)
++
++
++class Feature(SearchableResource):
++    feature_group = Text(required=True,
++                         fields={"keyword": Keyword()},
++                         analyzer=Analyzer.stemming_analyzer)
++    version = Keyword(required=True)
++    status = Keyword()
++    entity = Text(multi=True,
++                  fields={"keyword": Keyword()},
++                  analyzer=Analyzer.general_analyzer)
++    availability = Keyword()
++
++
++class User(SearchableResource):
++    # key is email
++    # name is full name, no separate first and last name
++    # total read, total own, total follow goes under usage metrics
++    first_name = Text(required=True,
++                      fields={"keyword": Keyword()},
++                      analyzer=Analyzer.stemming_analyzer)
++    last_name = Text(required=True,
++                     fields={"keyword": Keyword()},
++                     analyzer=Analyzer.stemming_analyzer)
++
++
++RESOURCE_TO_MAPPING: Dict[str, Document] = {
++    'table': Table,
++    'dashboard': Dashboard,
++    'feature': Feature,
++    'user': User,
++    'base': SearchableResource,
++}
+diff --git a/databuilder/databuilder/task/search/search_data_queries.py b/databuilder/databuilder/task/search/search_data_queries.py
+new file mode 100644
+index 00000000..e25a415f
+--- /dev/null
++++ b/databuilder/databuilder/task/search/search_data_queries.py
+@@ -0,0 +1,169 @@
++# Copyright Contributors to the Amundsen project.
++# SPDX-License-Identifier: Apache-2.0
++
++import textwrap
++
++# These queries are meant to be used to extract search metadata from neo4j
++# using SearchMetadatatoElasticasearchTask
++
++NEO4J_TABLE_CYPHER_QUERY = textwrap.dedent(
++    """
++    MATCH (db:Database)<-[:CLUSTER_OF]-(cluster:Cluster)
++    <-[:SCHEMA_OF]-(schema:Schema)<-[:TABLE_OF]-(table:Table)
++    {publish_tag_filter}
++    OPTIONAL MATCH (table)-[:DESCRIPTION]->(table_description:Description)
++    OPTIONAL MATCH (schema)-[:DESCRIPTION]->(schema_description:Description)
++    OPTIONAL MATCH (table)-[:DESCRIPTION]->(prog_descs:Programmatic_Description)
++    WITH db, cluster, schema, schema_description, table, table_description,
++    COLLECT(prog_descs.description) as programmatic_descriptions
++    OPTIONAL MATCH (table)-[:TAGGED_BY]->(tags:Tag) WHERE tags.tag_type='default'
++    WITH db, cluster, schema, schema_description, table, table_description, programmatic_descriptions,
++    COLLECT(DISTINCT tags.key) as tags
++    OPTIONAL MATCH (table)-[:HAS_BADGE]->(badges:Badge)
++    WITH db, cluster, schema, schema_description, table, table_description, programmatic_descriptions, tags,
++    COLLECT(DISTINCT badges.key) as badges
++    OPTIONAL MATCH (table)-[read:READ_BY]->(user:User)
++    WITH db, cluster, schema, schema_description, table, table_description, programmatic_descriptions, tags, badges,
++    OPTIONAL MATCH (table)-[:COLUMN]->(col:Column)
++    OPTIONAL MATCH (col)-[:DESCRIPTION]->(col_description:Description)
++    WITH db, cluster, schema, schema_description, table, table_description, tags, badges, unique_usage,
++    programmatic_descriptions,
++    COLLECT(col.name) AS columns, COLLECT(col_description.description) AS column_descriptions
++    OPTIONAL MATCH (table)-[:LAST_UPDATED_AT]->(time_stamp:Timestamp)
++    {additional_field_match}
++    RETURN db.name as database, cluster.name AS cluster, schema.name AS schema,
++    schema_description.description AS schema_description,
++    table.name AS name, table.key AS key, table_description.description AS description,
++    time_stamp.last_updated_timestamp AS last_updated_timestamp,
++    {{
++        {usage_fields}
++    }} AS usage,
++    columns,
++    column_descriptions,
++    unique_usage,
++    tags,
++    badges,
++    {additional_field_return}
++    programmatic_descriptions
++    ORDER BY table.name;
++    """
++)
++
++DEFAULT_TABLE_QUERY = NEO4J_TABLE_CYPHER_QUERY.format(publish_tag_filter='',
++                                                      additional_field_match='',
++                                                      usage_fields="""
++                                                      total_usage: SUM(read.read_count),
++                                                      unique_usage: COUNT(DISTINCT user.email)
++                                                      """,
++                                                      additional_field_return='')
++
++NEO4J_DASHBOARD_CYPHER_QUERY = textwrap.dedent(
++    """
++        MATCH (dashboard:Dashboard)
++        {publish_tag_filter}
++        MATCH (dashboard)-[:DASHBOARD_OF]->(dbg:Dashboardgroup)
++        MATCH (dbg)-[:DASHBOARD_GROUP_OF]->(cluster:Cluster)
++        OPTIONAL MATCH (dashboard)-[:DESCRIPTION]->(db_descr:Description)
++        OPTIONAL MATCH (dbg)-[:DESCRIPTION]->(dbg_descr:Description)
++        OPTIONAL MATCH (dashboard)-[:EXECUTED]->(last_exec:Execution)
++        WHERE split(last_exec.key, '/')[5] = '_last_successful_execution'
++        OPTIONAL MATCH (dashboard)-[read:READ_BY]->(user:User)
++        WITH dashboard, dbg, db_descr, dbg_descr, cluster, last_exec, SUM(read.read_count) AS total_usage
++        OPTIONAL MATCH (dashboard)-[:HAS_QUERY]->(query:Query)-[:HAS_CHART]->(chart:Chart)
++        WITH dashboard, dbg, db_descr, dbg_descr, cluster, last_exec, COLLECT(DISTINCT query.name) as query_names,
++        COLLECT(DISTINCT chart.name) as chart_names,
++        total_usage
++        OPTIONAL MATCH (dashboard)-[:TAGGED_BY]->(tags:Tag) WHERE tags.tag_type='default'
++        WITH dashboard, dbg, db_descr, dbg_descr, cluster, last_exec, query_names, chart_names, total_usage,
++        {additional_field_match}
++        COLLECT(DISTINCT tags.key) as tags
++        OPTIONAL MATCH (dashboard)-[:HAS_BADGE]->(badges:Badge)
++        WITH  dashboard, dbg, db_descr, dbg_descr, cluster, last_exec, query_names, chart_names, total_usage, tags,
++        COLLECT(DISTINCT badges.key) as badges
++        RETURN dbg.name as group_name, dashboard.name as name, cluster.name as cluster,
++        {additional_field_return}
++        {{
++            {usage_fields}
++        }} AS usage,
++        coalesce(db_descr.description, '') as description,
++        coalesce(dbg.description, '') as group_description, dbg.dashboard_group_url as group_url,
++        dashboard.dashboard_url as url, dashboard.key as key,
++        split(dashboard.key, '_')[0] as product, toInteger(last_exec.timestamp) as last_successful_run_timestamp,
++        query_names, chart_names, tags, badges
++        order by dbg.name
++    """
++)
++
++DEFAULT_DASHBOARD_QUERY = NEO4J_DASHBOARD_CYPHER_QUERY.format(publish_tag_filter='',
++                                                              additional_field_match='',
++                                                              usage_fields='total_usage: total_usage',
++                                                              additional_field_return='')
++
++NEO4J_USER_CYPHER_QUERY = textwrap.dedent(
++    """
++    MATCH (user:User)
++    {additional_field_match}
++    OPTIONAL MATCH (user)-[read:READ]->(a)
++    OPTIONAL MATCH (user)-[own:OWNER_OF]->(b)
++    OPTIONAL MATCH (user)-[follow:FOLLOWED_BY]->(c)
++    OPTIONAL MATCH (user)-[manage_by:MANAGE_BY]->(manager)
++    {publish_tag_filter}
++    with user, a, b, c, read, own, follow, manager
++    where user.full_name is not null
++    return user.email as key, user.first_name as first_name, user.last_name as last_name,
++    {additional_field_return}
++    {{
++        {usage_fields}
++    }} AS usage,
++    user.full_name as full_name, user.github_username as github_username, user.team_name as team_name,
++    user.employee_type as employee_type, manager.email as manager_email,
++    user.slack_id as slack_id, user.is_active as is_active, user.role_name as role_name,
++    order by user.email
++    """
++)
++
++DEFAULT_USER_QUERY = NEO4J_USER_CYPHER_QUERY.format(
++    publish_tag_filter='',
++    additional_field_match='',
++    usage_fields="""
++    total_read: REDUCE(sum_r = 0, r in COLLECT(DISTINCT read)| sum_r + r.read_count),
++    total_own: count(distinct b),
++    total_follow: count(distinct c)
++    """,
++    additional_field_return='')
++
++NEO4J_FEATURE_CYPHER_QUERY = textwrap.dedent(
++    """
++        MATCH (feature:Feature)
++        {publish_tag_filter}
++        OPTIONAL MATCH (fg:Feature_Group)-[:GROUPS]->(feature)
++        OPTIONAL MATCH (db:Database)-[:AVAILABLE_FEATURE]->(feature)
++        OPTIONAL MATCH (feature)-[:DESCRIPTION]->(desc:Description)
++        OPTIONAL MATCH (feature)-[:TAGGED_BY]->(tag:Tag)
++        OPTIONAL MATCH (feature)-[:HAS_BADGE]->(badge:Badge)
++        OPTIONAL MATCH (feature)-[read:READ_BY]->(user:User)
++        {additional_field_match}
++        RETURN
++        fg.name as feature_group,
++        feature.name as name,
++        feature.version as version,
++        feature.key as key,
++        {additional_field_return}
++        {{
++            {usage_fields}
++        }} AS usage,
++        feature.status as status,
++        feature.entity as entity,
++        desc.description as description,
++        db.name as availability,
++        COLLECT(DISTINCT badge.key) as badges,
++        COLLECT(DISTINCT tag.key) as tags,
++        toInteger(feature.last_updated_timestamp) as last_updated_timestamp
++        order by fg.name, feature.name, feature.version
++    """
++)
++
++DEFAULT_FEATURE_QUERY = NEO4J_FEATURE_CYPHER_QUERY.format(publish_tag_filter='',
++                                                          additional_field_match='',
++                                                          usage_fields='total_usage: SUM(read.read_count)',
++                                                          additional_field_return='')
+diff --git a/databuilder/databuilder/task/search/search_metadata_to_elasticsearch_task.py b/databuilder/databuilder/task/search/search_metadata_to_elasticsearch_task.py
+new file mode 100644
+index 00000000..c99ee1df
+--- /dev/null
++++ b/databuilder/databuilder/task/search/search_metadata_to_elasticsearch_task.py
+@@ -0,0 +1,182 @@
++# Copyright Contributors to the Amundsen project.
++# SPDX-License-Identifier: Apache-2.0
++
++import logging
++from datetime import date
++from typing import (
++    Any, Generator, List,
++)
++from uuid import uuid4
++
++from elasticsearch.exceptions import NotFoundError
++from elasticsearch.helpers import parallel_bulk
++from elasticsearch_dsl.connections import Connections, connections
++from elasticsearch_dsl.document import Document
++from elasticsearch_dsl.index import Index
++from pyhocon import ConfigTree
++
++from databuilder import Scoped
++from databuilder.extractor.base_extractor import Extractor
++from databuilder.task.base_task import Task
++from databuilder.task.search.document_mappings import RESOURCE_TO_MAPPING, SearchableResource
++from databuilder.transformer.base_transformer import NoopTransformer, Transformer
++from databuilder.utils.closer import Closer
++
++LOGGER = logging.getLogger(__name__)
++
++
++class SearchMetadatatoElasticasearchTask(Task):
++
++    ENTITY_TYPE = 'doc_type'
++    ELASTICSEARCH_CLIENT_CONFIG_KEY = 'client'
++    MAPPING_CLASS = 'document_mapping'
++    ELASTICSEARCH_ALIAS_CONFIG_KEY = 'alias'
++    ELASTICSEARCH_NEW_INDEX = 'new_index'
++    ELASTICSEARCH_PUBLISHER_BATCH_SIZE = 'batch_size'
++    ELASTICSEARCH_TIMEOUT_SEC = 'es_timeout_sec'
++    DATE = 'date'
++
++    DEFAULT_ENTITY_TYPE = 'table'
++
++    today = date.today().strftime("%Y/%m/%d")
++
++    def __init__(self,
++                 extractor: Extractor,
++                 transformer: Transformer = NoopTransformer()) -> None:
++        self.extractor = extractor
++        self.transformer = transformer
++
++        self._closer = Closer()
++        self._closer.register(self.extractor.close)
++        self._closer.register(self.transformer.close)
++
++    def init(self, conf: ConfigTree) -> None:
++        # initialize extractor with configurarion
++        self.extractor.init(Scoped.get_scoped_conf(conf, self.extractor.get_scope()))
++        # initialize transformer with configuration
++        self.transformer.init(Scoped.get_scoped_conf(conf, self.transformer.get_scope()))
++
++        # task configuration
++        conf = Scoped.get_scoped_conf(conf, self.get_scope())
++        self.date = conf.get_string(SearchMetadatatoElasticasearchTask.DATE, self.today)
++        self.entity = conf.get_string(SearchMetadatatoElasticasearchTask.ENTITY_TYPE,
++                                      self.DEFAULT_ENTITY_TYPE).lower()
++        self.elasticsearch_client = conf.get(
++            SearchMetadatatoElasticasearchTask.ELASTICSEARCH_CLIENT_CONFIG_KEY
++        )
++        self.elasticsearch_alias = conf.get(
++            SearchMetadatatoElasticasearchTask.ELASTICSEARCH_ALIAS_CONFIG_KEY
++        )
++        self.elasticsearch_new_index = conf.get(
++            SearchMetadatatoElasticasearchTask.ELASTICSEARCH_NEW_INDEX,
++            self.create_new_index_name())
++        self.document_mapping = conf.get(SearchMetadatatoElasticasearchTask.MAPPING_CLASS,
++                                         RESOURCE_TO_MAPPING[self.entity])
++
++        LOGGER.info(issubclass(self.document_mapping, SearchableResource))
++
++        if not issubclass(self.document_mapping, SearchableResource):
++            msg = "Provided document_mapping should be instance" \
++                f" of SearchableResource not {type(self.document_mapping)}"
++            LOGGER.error(msg)
++            raise TypeError(msg)
++
++        self.elasticsearch_batch_size = conf.get(
++            SearchMetadatatoElasticasearchTask.ELASTICSEARCH_PUBLISHER_BATCH_SIZE, 10000
++        )
++        self.elasticsearch_timeout_sec = conf.get(
++            SearchMetadatatoElasticasearchTask.ELASTICSEARCH_TIMEOUT_SEC, 120
++        )
++
++    def create_new_index_name(self) -> str:
++        hex_string = uuid4().hex
++        return f"{self.elasticsearch_alias}_{self.date}_{hex_string}"
++
++    def to_document(self, metadata: Any) -> Document:
++        return self.document_mapping(_index=self.elasticsearch_new_index, **metadata)
++
++    def generate_documents(self, record: Any) -> Generator:
++        # iterate through records
++        while record:
++            record = self.transformer.transform(record)
++            if not record:
++                # Move on if the transformer filtered the record out
++                record = self.extractor.extract()
++                continue
++            yield self.to_document(metadata=record).to_dict(True)
++            record = self.extractor.extract()
++
++    def _get_old_index(self, connection: Connections) -> List[str]:
++        """
++        Retrieve all indices that currently have {elasticsearch_alias} alias
++        :return: list of elasticsearch indices
++        """
++        try:
++            indices = connection.indices.get_alias(self.elasticsearch_alias).keys()
++            return indices
++        except NotFoundError:
++            LOGGER.warn("Received index not found error from Elasticsearch. " +
++                        "The index doesn't exist for a newly created ES. It's OK on first run.")
++            # return empty list on exception
++            return []
++
++    def _delete_old_index(self, connection: Connections, document_index: Index) -> None:
++        alias_updates = []
++        previous_index = self._get_old_index(connection=connection)
++        for previous_index_name in previous_index:
++            if previous_index_name != document_index._name:
++                LOGGER.info(f"Deleting old index {previous_index_name}")
++                alias_updates.append({"remove_index": {"index": previous_index_name}})
++        alias_updates.append({"add": {
++            "index": self.elasticsearch_new_index,
++            "alias": self.elasticsearch_alias}})
++        connection.indices.update_aliases({"actions": alias_updates})
++
++    def run(self) -> None:
++        LOGGER.info('Running search metadata to Elasticsearch task')
++        try:
++            # extract records from metadata store
++            record = self.extractor.extract()
++
++            # create connection
++            connections.add_connection('default', self.elasticsearch_client)
++            connection = connections.get_connection()
++
++            # health check ES
++            health = connection.cluster.health()
++            status = health["status"]
++            if status not in ("green", "yellow"):
++                msg = f"Elasticsearch healthcheck failed: {status}"
++                LOGGER.error(msg)
++                raise Exception(msg)
++
++            # create index
++            LOGGER.info(f"Creating ES index {self.elasticsearch_new_index}")
++            index = Index(name=self.elasticsearch_new_index, using=self.elasticsearch_client)
++            index.document(self.document_mapping)
++            index.create()
++
++            # publish search metadata to ES
++            cnt = 0
++            for success, info in parallel_bulk(connection,
++                                               self.generate_documents(record=record),
++                                               raise_on_error=False,
++                                               chunk_size=self.elasticsearch_batch_size,
++                                               request_timeout=self.elasticsearch_timeout_sec):
++                if not success:
++                    LOGGER.warn(f"There was an error while indexing a document to ES: {info}")
++                else:
++                    cnt += 1
++                if cnt == self.elasticsearch_batch_size:
++                    LOGGER.info(f'Published {str(cnt*self.elasticsearch_batch_size)} records to ES')
++
++            # delete old index
++            self._delete_old_index(connection=connection,
++                                   document_index=index)
++
++            LOGGER.info("Elasticsearch Indexing completed")
++        finally:
++            self._closer.close()
++
++    def get_scope(self) -> str:
++        return 'task.search_metadata_to_elasticsearch'
+diff --git a/databuilder/requirements.txt b/databuilder/requirements.txt
+index 1150bed0..53075f91 100644
+--- a/databuilder/requirements.txt
++++ b/databuilder/requirements.txt
+@@ -21,9 +21,12 @@ retrying>=1.3.3
+ unicodecsv>=0.14.1,<1.0
+ httplib2>=0.18.0
+ unidecode
+-Jinja2>=2.10.0,<4
++Jinja2>=2.10.0,<=2.11.3
+ pandas>=0.21.0,<1.2.0
+ responses>=0.10.6
++MarkupSafe==2.0.1
++jsonref==0.2
+ 
+-amundsen-common>=0.16.0
++amundsen-common==0.24.1
+ amundsen-rds==0.0.6
++itsdangerous<=2.0.1
+diff --git a/databuilder/setup.py b/databuilder/setup.py
+index 81f37188..fc241b7a 100644
+--- a/databuilder/setup.py
++++ b/databuilder/setup.py
+@@ -4,7 +4,7 @@ import os
+ 
+ from setuptools import find_packages, setup
+ 
+-__version__ = '6.4.6'
++__version__ = '6.5.0'
+ 
+ requirements_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'requirements.txt')
+ with open(requirements_path) as requirements_file:
+@@ -56,9 +56,9 @@ spark = [
+ ]
+ 
+ neptune = [
+-    'amundsen-gremlin>=0.0.9',
++    'amundsen-gremlin>=0.0.12',
+     'Flask==1.0.2',
+-    'gremlinpython==3.4.3',
++    'gremlinpython==3.4.12',
+     'requests-aws4auth==1.1.0',
+     'typing-extensions==3.7.4',
+     'overrides==2.5',
+diff --git a/databuilder/tests/unit/extractor/test_dbt_extractor.py b/databuilder/tests/unit/extractor/test_dbt_extractor.py
+index 3da9f240..1371604f 100644
+--- a/databuilder/tests/unit/extractor/test_dbt_extractor.py
++++ b/databuilder/tests/unit/extractor/test_dbt_extractor.py
+@@ -57,7 +57,7 @@ class TestCsvExtractor(unittest.TestCase):
+         result = extractor.extract()
+         self.assertTrue(isinstance(result, TableMetadata))
+         self.assertEqual(result.name, 'fact_third_party_performance')
+-        self.assertEqual(result.description.text, 'The performance for third party vendors loss rate by day.')
++        self.assertEqual(result.description.text, 'the performance for third party vendors loss rate by day.')
+         self.assertEqual(result.database, self.database_name)
+         self.assertEqual(result.cluster, 'dbt_demo')
+         self.assertEqual(result.schema, 'public')
+@@ -106,10 +106,10 @@ class TestCsvExtractor(unittest.TestCase):
+         extractor_1.init(Scoped.get_scoped_conf(conf=conf_1, scope=extractor_1.get_scope()))
+ 
+         with open(self.catalog_file_loc, 'r') as f:
+-            catalog_as_json = json.dumps(json.load(f))
++            catalog_as_json = json.dumps(json.loads(f.read().lower()))
+ 
+         with open(self.manifest_data, 'r') as f:
+-            manifest_as_json = json.dumps(json.load(f))
++            manifest_as_json = json.dumps(json.loads(f.read().lower()))
+ 
+         config_dict_2 = {
+             f'extractor.dbt.{DbtExtractor.DATABASE_NAME}': self.database_name,
+@@ -150,8 +150,8 @@ class TestCsvExtractor(unittest.TestCase):
+ 
+         self.assertEqual(result.name, 'fact_third_party_performance')
+         self.assertEqual(result.database, 'SNOWFLAKE')
+-        self.assertEqual(result.cluster, 'DBT_DEMO')
+-        self.assertEqual(result.schema, 'PUBLIC')
++        self.assertEqual(result.cluster, 'dbt_demo')
++        self.assertEqual(result.schema, 'public')
+ 
+     def test_do_not_extract_tables(self) -> None:
+         """
+diff --git a/databuilder/tests/unit/extractor/test_eventbridge_extractor.py b/databuilder/tests/unit/extractor/test_eventbridge_extractor.py
+new file mode 100644
+index 00000000..426cb590
+--- /dev/null
++++ b/databuilder/tests/unit/extractor/test_eventbridge_extractor.py
+@@ -0,0 +1,451 @@
++# Copyright Contributors to the Amundsen project.
++# SPDX-License-Identifier: Apache-2.0
++
++import json
++import logging
++import unittest
++
++from mock import patch
++from pyhocon import ConfigFactory
++
++from databuilder.extractor.eventbridge_extractor import EventBridgeExtractor
++from databuilder.models.table_metadata import ColumnMetadata, TableMetadata
++
++registry_name = "TestAmundsen"
++
++test_schema_openapi_3 = {
++    "openapi": "3.0.0",
++    "info": {"version": "1.0.0", "title": "OrderConfirmed"},
++    "paths": {},
++    "components": {
++        "schemas": {
++            "AWSEvent": {
++                "type": "object",
++                "required": [
++                    "detail-type",
++                    "resources",
++                    "detail",
++                    "id",
++                    "source",
++                    "time",
++                    "region",
++                    "account",
++                ],
++                "properties": {
++                    "detail": {"$ref": "#/components/schemas/OrderConfirmed"},
++                    "account": {"type": "string"},
++                    "detail-type": {"type": "string"},
++                    "id": {"type": "string"},
++                    "region": {"type": "string"},
++                    "resources": {"type": "array", "items": {"type": "string"}},
++                    "source": {"type": "string"},
++                    "time": {"type": "string", "format": "date-time"},
++                },
++            },
++            "OrderConfirmed": {
++                "type": "object",
++                "properties": {
++                    "id": {"type": "number", "format": "int64"},
++                    "status": {"type": "string"},
++                    "currency": {"type": "string"},
++                    "customer": {"$ref": "#/components/schemas/Customer"},
++                    "items": {
++                        "type": "array",
++                        "items": {"$ref": "#/components/schemas/Item"},
++                    },
++                },
++            },
++            "Customer": {
++                "type": "object",
++                "properties": {
++                    "firstName": {"type": "string"},
++                    "lastName": {"type": "string"},
++                    "email": {"type": "string"},
++                    "phone": {},
++                },
++                "description": "customer description",
++            },
++            "Item": {
++                "type": "object",
++                "properties": {
++                    "sku": {"type": "number", "format": "int64"},
++                    "name": {"type": "string"},
++                    "price": {"type": "number", "format": "double"},
++                    "quantity": {"type": "number", "format": "int32"},
++                },
++            },
++            "PrimitiveSchema": {"type": "bool"},
++        }
++    },
++}
++
++openapi_3_item_type = (
++    "struct<sku:number[int64],name:string,price:number[double],quantity:number[int32]>"
++)
++openapi_3_customer_type = (
++    "struct<firstName:string,lastName:string,email:string,phone:object>"
++)
++openapi_3_order_confirmed_type = (
++    f"struct<id:number[int64],status:string,currency:string,"
++    f"customer:{openapi_3_customer_type},items:array<{openapi_3_item_type}>>"
++)
++
++expected_openapi_3_tables = [
++    TableMetadata(
++        "eventbridge",
++        registry_name,
++        test_schema_openapi_3["info"]["title"],
++        "AWSEvent",
++        None,
++        [
++            ColumnMetadata("detail", None, openapi_3_order_confirmed_type, 0),
++            ColumnMetadata("account", None, "string", 1),
++            ColumnMetadata("detail-type", None, "string", 2),
++            ColumnMetadata("id", None, "string", 3),
++            ColumnMetadata("region", None, "string", 4),
++            ColumnMetadata("resources", None, "array<string>", 5),
++            ColumnMetadata("source", None, "string", 6),
++            ColumnMetadata("time", None, "string[date-time]", 7),
++        ],
++        False,
++    ),
++    TableMetadata(
++        "eventbridge",
++        registry_name,
++        test_schema_openapi_3["info"]["title"],
++        "OrderConfirmed",
++        None,
++        [
++            ColumnMetadata("id", None, "number[int64]", 0),
++            ColumnMetadata("status", None, "string", 1),
++            ColumnMetadata("currency", None, "string", 2),
++            ColumnMetadata(
++                "customer", "customer description", openapi_3_customer_type, 3,
++            ),
++            ColumnMetadata("items", None, f"array<{openapi_3_item_type}>", 4),
++        ],
++        False,
++    ),
++    TableMetadata(
++        "eventbridge",
++        registry_name,
++        test_schema_openapi_3["info"]["title"],
++        "Customer",
++        None,
++        [
++            ColumnMetadata("firstName", None, "string", 0),
++            ColumnMetadata("lastName", None, "string", 1),
++            ColumnMetadata("email", None, "string", 2),
++            ColumnMetadata("phone", None, "object", 3),
++        ],
++        False,
++    ),
++    TableMetadata(
++        "eventbridge",
++        registry_name,
++        test_schema_openapi_3["info"]["title"],
++        "Item",
++        None,
++        [
++            ColumnMetadata("sku", None, "number[int64]", 0),
++            ColumnMetadata("name", None, "string", 1),
++            ColumnMetadata("price", None, "number[double]", 2),
++            ColumnMetadata("quantity", None, "number[int32]", 3),
++        ],
++        False,
++    ),
++]
++
++test_schema_json_draft_4 = {
++    "$schema": "http://json-schema.org/draft-04/schema#",
++    "$id": "http://example.com/example.json",
++    "type": "object",
++    "title": "The root schema",
++    "description": "The root schema comprises the entire JSON document.",
++    "required": [
++        "version",
++        "id",
++        "detail-type",
++        "source",
++        "account",
++        "time",
++        "region",
++        "resources",
++        "detail",
++    ],
++    "definitions": {
++        "BookingDone": {
++            "type": "object",
++            "properties": {"booking": {"$ref": "#/definitions/Booking"}},
++        },
++        "Booking": {
++            "type": "object",
++            "properties": {
++                "id": {"type": "string"},
++                "status": {"type": "string"},
++                "customer": {"$ref": "#/definitions/Customer"},
++            },
++            "required": ["id", "status", "customer"],
++        },
++        "Customer": {
++            "type": "object",
++            "properties": {"id": {"type": "string"}, "name": {"type": "string"}},
++            "required": ["id", "name"],
++        },
++    },
++    "properties": {
++        "version": {
++            "$id": "#/properties/version",
++            "type": "string",
++            "description": "version description",
++        },
++        "id": {"$id": "#/properties/id", "type": "string",},
++        "detail-type": {"$id": "#/properties/detail-type", "type": "string",},
++        "source": {"$id": "#/properties/source", "type": "string",},
++        "account": {"$id": "#/properties/account", "type": "string",},
++        "time": {"$id": "#/properties/time", "type": "string",},
++        "region": {"$id": "#/properties/region", "type": "string",},
++        "resources": {
++            "$id": "#/properties/resources",
++            "type": "array",
++            "additionalItems": True,
++            "items": {"$id": "#/properties/resources/items", "type": "string"},
++        },
++        "detail": {"$ref": "#/definitions/BookingDone"},
++    },
++}
++
++json_draft_4_customer_type = f"struct<id:string,name:string>"
++json_draft_4_booking_type = (
++    f"struct<id:string,status:string,customer:{json_draft_4_customer_type}>"
++)
++json_draft_4_booking_done_type = f"struct<booking:{json_draft_4_booking_type}>"
++
++expected_json_draft_4_tables = [
++    TableMetadata(
++        "eventbridge",
++        registry_name,
++        test_schema_json_draft_4["title"],
++        "BookingDone",
++        None,
++        [ColumnMetadata("booking", None, json_draft_4_booking_type, 0),],
++        False,
++    ),
++    TableMetadata(
++        "eventbridge",
++        registry_name,
++        test_schema_json_draft_4["title"],
++        "Booking",
++        None,
++        [
++            ColumnMetadata("id", None, "string", 0),
++            ColumnMetadata("status", None, "string", 1),
++            ColumnMetadata("customer", None, json_draft_4_customer_type, 2),
++        ],
++        False,
++    ),
++    TableMetadata(
++        "eventbridge",
++        registry_name,
++        test_schema_json_draft_4["title"],
++        "Customer",
++        None,
++        [
++            ColumnMetadata("id", None, "string", 0),
++            ColumnMetadata("name", None, "string", 1),
++        ],
++        False,
++    ),
++    TableMetadata(
++        "eventbridge",
++        registry_name,
++        test_schema_json_draft_4["title"],
++        "Root",
++        test_schema_json_draft_4["description"],
++        [
++            ColumnMetadata("version", "version description", "string", 0),
++            ColumnMetadata("id", None, "string", 1),
++            ColumnMetadata("detail-type", None, "string", 2),
++            ColumnMetadata("source", None, "string", 3),
++            ColumnMetadata("account", None, "string", 4),
++            ColumnMetadata("time", None, "string", 5),
++            ColumnMetadata("region", None, "string", 6),
++            ColumnMetadata("resources", None, "array<string>", 7),
++            ColumnMetadata("detail", None, json_draft_4_booking_done_type, 8),
++        ],
++        False,
++    ),
++]
++
++schema_versions = [
++    {"SchemaVersion": "1"},
++    {"SchemaVersion": "2"},
++    {"SchemaVersion": "3"},
++]
++
++expected_schema_version = "3"
++
++property_types = [
++    {"NoType": "",},
++    {"type": "object", "NoProperties": {}},
++    {
++        "type": "object",
++        "properties": {
++            "property_1": {"type": "string"},
++            "property_2": {"type": "number"},
++        },
++    },
++    {
++        "type": "object",
++        "properties": {
++            "property_1": {
++                "type": "object",
++                "properties": {
++                    "property_1_1": {"type": "string"},
++                    "property_1_2": {"type": "number", "format": "int64"},
++                },
++            },
++            "property_2": {"type": "number"},
++        },
++    },
++    {"type": "array", "NoItems": {}},
++    {"type": "array", "items": {"type": "string"}},
++    {
++        "type": "array",
++        "items": {
++            "type": "object",
++            "properties": {
++                "property_1": {"type": "string"},
++                "property_2": {"type": "number"},
++            },
++        },
++    },
++    {"type": "string"},
++    {"type": "string", "format": "date-time"},
++]
++
++expected_property_types = [
++    "object",
++    "struct<object>",
++    "struct<property_1:string,property_2:number>",
++    "struct<property_1:struct<property_1_1:string,property_1_2:number[int64]>,property_2:number>",
++    "array<object>",
++    "array<string>",
++    "array<struct<property_1:string,property_2:number>>",
++    "string",
++    "string[date-time]",
++]
++
++
++# patch whole class to avoid actually calling for boto3.client during tests
++@patch("databuilder.extractor.eventbridge_extractor.boto3.client", lambda x: None)
++class TestEventBridgeExtractor(unittest.TestCase):
++    def setUp(self) -> None:
++        logging.basicConfig(level=logging.INFO)
++
++        self.conf = ConfigFactory.from_dict(
++            {EventBridgeExtractor.REGISTRY_NAME_KEY: registry_name}
++        )
++        self.maxDiff = None
++
++    def test_extraction_with_empty_query_result(self) -> None:
++        """
++        Test Extraction with empty result from query
++        """
++        with patch.object(EventBridgeExtractor, "_search_schemas") as mock_search:
++            mock_search.return_value = []
++
++            extractor = EventBridgeExtractor()
++            extractor.init(self.conf)
++
++            results = extractor.extract()
++            self.assertEqual(results, None)
++
++    def test_extraction_no_content(self) -> None:
++        with patch.object(EventBridgeExtractor, "_search_schemas") as mock_search:
++            mock_search.return_value = [{"NoContent": {},}]
++
++            extractor = EventBridgeExtractor()
++            extractor.init(self.conf)
++
++            results = extractor.extract()
++            self.assertEqual(results, None)
++
++    def test_extraction_unsupported_format(self) -> None:
++        with patch.object(EventBridgeExtractor, "_search_schemas") as mock_search:
++            mock_search.return_value = [{"Content": json.dumps({}),}]
++
++            extractor = EventBridgeExtractor()
++            extractor.init(self.conf)
++
++            results = extractor.extract()
++            self.assertEqual(results, None)
++
++    def test_extraction_with_single_result_openapi_3(self) -> None:
++        with patch.object(EventBridgeExtractor, "_search_schemas") as mock_search:
++            mock_search.return_value = [{"Content": json.dumps(test_schema_openapi_3),}]
++
++            extractor = EventBridgeExtractor()
++            extractor.init(self.conf)
++
++            for expected_table in expected_openapi_3_tables:
++                self.assertEqual(
++                    expected_table.__repr__(), extractor.extract().__repr__()
++                )
++            self.assertIsNone(extractor.extract())
++
++    def test_extraction_with_single_result_json_draft_4(self) -> None:
++        with patch.object(EventBridgeExtractor, "_search_schemas") as mock_search:
++            mock_search.return_value = [
++                {"Content": json.dumps(test_schema_json_draft_4),}
++            ]
++
++            extractor = EventBridgeExtractor()
++            extractor.init(self.conf)
++
++            for expected_table in expected_json_draft_4_tables:
++                self.assertEqual(
++                    expected_table.__repr__(), extractor.extract().__repr__()
++                )
++            self.assertIsNone(extractor.extract())
++
++    def test_extraction_with_multiple_result(self) -> None:
++        with patch.object(EventBridgeExtractor, "_search_schemas") as mock_search:
++            mock_search.return_value = [
++                {"Content": json.dumps(test_schema_openapi_3),},
++                {"Content": json.dumps(test_schema_json_draft_4),},
++            ]
++
++            extractor = EventBridgeExtractor()
++            extractor.init(self.conf)
++
++            for expected_schema in expected_openapi_3_tables:
++                self.assertEqual(
++                    expected_schema.__repr__(), extractor.extract().__repr__()
++                )
++
++            for expected_table in expected_json_draft_4_tables:
++                self.assertEqual(
++                    expected_table.__repr__(), extractor.extract().__repr__()
++                )
++
++            self.assertIsNone(extractor.extract())
++
++    def test_get_latest_schema_version(self) -> None:
++        self.assertEqual(
++            EventBridgeExtractor._get_latest_schema_version(schema_versions),
++            expected_schema_version,
++        )
++
++    def test_get_property_type(self) -> None:
++        for property_type, expected_property_type in zip(
++            property_types, expected_property_types
++        ):
++            self.assertEqual(
++                EventBridgeExtractor._get_property_type(property_type),
++                expected_property_type,
++            )
++
++
++if __name__ == "__main__":
++    unittest.main()
+diff --git a/databuilder/tests/unit/extractor/test_glue_extractor.py b/databuilder/tests/unit/extractor/test_glue_extractor.py
+index c1cff352..c33e7e57 100644
+--- a/databuilder/tests/unit/extractor/test_glue_extractor.py
++++ b/databuilder/tests/unit/extractor/test_glue_extractor.py
+@@ -64,6 +64,7 @@ class TestGlueExtractor(unittest.TestCase):
+         logging.basicConfig(level=logging.INFO)
+ 
+         self.conf = ConfigFactory.from_dict({})
++        self.maxDiff = None
+ 
+     def test_extraction_with_empty_query_result(self) -> None:
+         """
+@@ -273,6 +274,32 @@ class TestGlueExtractor(unittest.TestCase):
+             self.assertEqual(expected.__repr__(), actual.__repr__())
+             self.assertIsNone(extractor.extract())
+ 
++    def test_extraction_with_partition_badge(self) -> None:
++        with patch.object(GlueExtractor, '_search_tables') as mock_search:
++            mock_search.return_value = [test_table]
++
++            extractor = GlueExtractor()
++            extractor.init(conf=ConfigFactory.from_dict({
++                GlueExtractor.PARTITION_BADGE_LABEL_KEY: "partition_key",
++            }))
++            actual = extractor.extract()
++            expected = TableMetadata('glue', 'gold', 'test_schema', 'test_table', 'a table for testing',
++                                     [ColumnMetadata('col_id1', 'description of id1', 'bigint', 0),
++                                      ColumnMetadata('col_id2', 'description of id2', 'bigint', 1),
++                                      ColumnMetadata('is_active', None, 'boolean', 2),
++                                      ColumnMetadata('source', 'description of source', 'varchar', 3),
++                                      ColumnMetadata('etl_created_at', 'description of etl_created_at', 'timestamp', 4),
++                                      ColumnMetadata('ds', None, 'varchar', 5),
++                                      ColumnMetadata(
++                                          'partition_key1',
++                                          'description of partition_key1',
++                                          'string',
++                                          6,
++                                          ["partition_key"],
++                                     ),
++                                     ], False)
++            self.assertEqual(expected.__repr__(), actual.__repr__())
++
+ 
+ if __name__ == '__main__':
+     unittest.main()
+diff --git a/docs/developer_guide.md b/docs/developer_guide.md
+index f29f061f..9d7cd6a9 100644
+--- a/docs/developer_guide.md
++++ b/docs/developer_guide.md
+@@ -75,7 +75,7 @@ rm -rf .local/neo4j
+ 
+ ### Testing Amundsen frontend locally
+ 
+-Amundsen has an instruction regarding local frontend launch [here](/frontend/docs/installation.md)
++Amundsen has an instruction regarding local frontend launch [here](/amundsen/frontend/docs/installation/)
+ 
+ Here are some additional changes you might need for windows (OS Win 10):
+ 
+diff --git a/frontend/amundsen_application/api/search/v1.py b/frontend/amundsen_application/api/search/v1.py
+index 0d963ef9..91547e59 100644
+--- a/frontend/amundsen_application/api/search/v1.py
++++ b/frontend/amundsen_application/api/search/v1.py
+@@ -117,7 +117,10 @@ def _search_resources(*, search_term: str,
+     }
+ 
+     try:
++        # Apply filtering, we don't do that in this case
+         transformed_filters = _transform_filters(filters=filters, resources=resources)
++
++
+         query_request = generate_query_request(filters=transformed_filters,
+                                                resources=resources,
+                                                page_index=page_index,
+@@ -129,7 +132,7 @@ def _search_resources(*, search_term: str,
+                                   headers={'Content-Type': 'application/json'},
+                                   method='POST',
+                                   data=request_json)
+-        LOGGER.info(response.json())
++        LOGGER.info(f"Search request response JSON: {response.json()}")
+         status_code = response.status_code
+ 
+         if status_code == HTTPStatus.OK:
+diff --git a/frontend/amundsen_application/oidc_config.py b/frontend/amundsen_application/oidc_config.py
+index 414480c8..1f51966e 100644
+--- a/frontend/amundsen_application/oidc_config.py
++++ b/frontend/amundsen_application/oidc_config.py
+@@ -33,6 +33,7 @@ def get_auth_user(app: Flask) -> User:
+     :param app: The instance of the current app.
+     :return: A class UserInfo (Note, there isn't a UserInfo class, so we use Any)
+     """
++    print(f"Flask session: {session}")
+     user_info = load_user(session.get("user"))
+     return user_info
+ 
+diff --git a/frontend/amundsen_application/static/js/components/EditableText/styles.scss b/frontend/amundsen_application/static/js/components/EditableText/styles.scss
+index 0b85ef54..e301c61e 100644
+--- a/frontend/amundsen_application/static/js/components/EditableText/styles.scss
++++ b/frontend/amundsen_application/static/js/components/EditableText/styles.scss
+@@ -8,6 +8,7 @@
+   .markdown-wrapper {
+     font-size: 14px;
+     word-break: break-word;
++    white-space: break-spaces;
+   }
+ 
+   .edit-link {
+diff --git a/frontend/amundsen_application/static/js/components/SVGIcons/GraphIcon.tsx b/frontend/amundsen_application/static/js/components/SVGIcons/GraphIcon.tsx
+new file mode 100644
+index 00000000..6d296b50
+--- /dev/null
++++ b/frontend/amundsen_application/static/js/components/SVGIcons/GraphIcon.tsx
+@@ -0,0 +1,40 @@
++// Copyright Contributors to the Amundsen project.
++// SPDX-License-Identifier: Apache-2.0
++
++import * as React from 'react';
++import { v4 as uuidv4 } from 'uuid';
++
++import { IconSizes } from 'interfaces';
++import { IconProps } from './types';
++import { DEFAULT_CIRCLE_FILL_COLOR } from './constants';
++
++export const GraphIcon: React.FC<IconProps> = ({
++  size = IconSizes.REGULAR,
++  fill = DEFAULT_CIRCLE_FILL_COLOR,
++}: IconProps) => {
++  const id = `graph_icon_${uuidv4()}`;
++
++  return (
++    <svg viewBox="0 0 25 25" height={size} width={size}>
++      <defs>
++        <path
++          d="M12,0.259C5.516,0.259,0.258,5.516,0.258,12c0,6.486,5.258,11.74,11.742,11.74S23.742,18.486,23.742,12
++            C23.742,5.516,18.484,0.259,12,0.259z M18.896,10.467c-0.137,0-0.268,0-0.383-0.054l-2.735,2.736
++            c0.053,0.115,0.053,0.244,0.053,0.383c0,0.846-0.684,1.533-1.531,1.533s-1.531-0.688-1.531-1.533l0.053-0.383l-1.97-1.97
++            c-0.245,0.054-0.521,0.054-0.766,0l-3.501,3.501l0.054,0.385c0,0.846-0.686,1.531-1.533,1.531s-1.533-0.686-1.533-1.531
++            c0-0.848,0.686-1.533,1.533-1.533l0.383,0.055l3.502-3.503C8.851,9.586,8.981,9.019,9.387,8.62c0.598-0.605,1.564-0.605,2.161,0
++            c0.407,0.398,0.536,0.966,0.398,1.463l1.97,1.969l0.383-0.054c0.137,0,0.268,0,0.383,0.054l2.734-2.735
++            c-0.053-0.115-0.053-0.245-0.053-0.383c0-0.847,0.688-1.532,1.532-1.532c0.848,0,1.532,0.686,1.532,1.532
++            S19.743,10.467,18.896,10.467z"
++          id={id}
++        />
++      </defs>
++      <g fill="none" fillRule="evenodd">
++        <mask id="prefix__b" fill="#fff">
++          <use xlinkHref={`#${id}`} />
++        </mask>
++        <use fill={fill} xlinkHref={`#${id}`} />
++      </g>
++    </svg>
++  );
++};
+diff --git a/frontend/amundsen_application/static/js/components/SVGIcons/constants.ts b/frontend/amundsen_application/static/js/components/SVGIcons/constants.ts
+index 9319a7d4..8fc1a38c 100644
+--- a/frontend/amundsen_application/static/js/components/SVGIcons/constants.ts
++++ b/frontend/amundsen_application/static/js/components/SVGIcons/constants.ts
+@@ -1,3 +1,5 @@
+ export const DEFAULT_FILL_COLOR = '#9191A8'; // gray40
+ export const FAILURE_FILL_COLOR = '#FF9E87'; // sunset20
+ export const SUCCESS_FILL_COLOR = '#4AE3AE'; // mint20
++
++export const DEFAULT_CIRCLE_FILL_COLOR = '#523be4'; // indigo80
+diff --git a/frontend/amundsen_application/static/js/features/ColumnList/ColumnType/parser.ts b/frontend/amundsen_application/static/js/features/ColumnList/ColumnType/parser.ts
+index 094644f7..a66ca297 100644
+--- a/frontend/amundsen_application/static/js/features/ColumnList/ColumnType/parser.ts
++++ b/frontend/amundsen_application/static/js/features/ColumnList/ColumnType/parser.ts
+@@ -16,6 +16,7 @@ enum DatabaseId {
+   Hive = 'hive',
+   Presto = 'presto',
+   Delta = 'delta',
++  EventBrdige = 'eventbridge',
+   Default = 'default',
+ }
+ const SUPPORTED_TYPES = {
+@@ -25,6 +26,7 @@ const SUPPORTED_TYPES = {
+   [DatabaseId.Presto]: ['array', 'map', 'row'],
+   // https://docs.databricks.com/spark/latest/spark-sql/language-manual/sql-ref-datatypes.html#data-types
+   [DatabaseId.Delta]: ['array', 'map', 'struct'],
++  [DatabaseId.EventBrdige]: ['array', 'struct'],
+   [DatabaseId.Default]: ['array', 'map', 'struct', 'row', 'uniontype'],
+ };
+ const OPEN_DELIMETERS = {
+diff --git a/frontend/amundsen_application/static/js/features/ColumnList/index.spec.tsx b/frontend/amundsen_application/static/js/features/ColumnList/index.spec.tsx
+index 16c6ecf2..43de2d64 100644
+--- a/frontend/amundsen_application/static/js/features/ColumnList/index.spec.tsx
++++ b/frontend/amundsen_application/static/js/features/ColumnList/index.spec.tsx
+@@ -228,6 +228,15 @@ describe('ColumnList', () => {
+ 
+         expect(actual).toEqual(expected);
+       });
++
++      it('should not show column statistics icon', () => {
++        const { wrapper } = setup({ columns });
++
++        const expected = 0;
++        const actual = wrapper.find('GraphIcon').length;
++
++        expect(actual).toEqual(expected);
++      });
+     });
+ 
+     describe('when columns with one usage data entry are passed', () => {
+@@ -240,6 +249,15 @@ describe('ColumnList', () => {
+ 
+         expect(actual).toEqual(expected);
+       });
++
++      it('should show column statistics icon', () => {
++        const { wrapper } = setup({ columns });
++
++        const expected = 1;
++        const actual = wrapper.find('GraphIcon').length;
++
++        expect(actual).toEqual(expected);
++      });
+     });
+ 
+     describe('when columns with several stats including usage are passed', () => {
+@@ -253,6 +271,15 @@ describe('ColumnList', () => {
+         expect(actual).toEqual(expected);
+       });
+ 
++      it('should show column statistics icon', () => {
++        const { wrapper } = setup({ columns });
++
++        const expected = columns.length;
++        const actual = wrapper.find('GraphIcon').length;
++
++        expect(actual).toEqual(expected);
++      });
++
+       describe('when usage sorting is passed', () => {
+         it('should sort the data by that value', () => {
+           const { wrapper } = setup({
+diff --git a/frontend/amundsen_application/static/js/features/ColumnList/index.tsx b/frontend/amundsen_application/static/js/features/ColumnList/index.tsx
+index ca24adad..2007512a 100644
+--- a/frontend/amundsen_application/static/js/features/ColumnList/index.tsx
++++ b/frontend/amundsen_application/static/js/features/ColumnList/index.tsx
+@@ -43,6 +43,8 @@ import { logAction } from 'utils/analytics';
+ import { buildTableKey, TablePageParams } from 'utils/navigationUtils';
+ import { getUniqueValues, filterOutUniqueValues } from 'utils/stats';
+ 
++import { GraphIcon } from 'components/SVGIcons/GraphIcon';
++
+ import ColumnType from './ColumnType';
+ import ColumnDescEditableText from './ColumnDescEditableText';
+ import ColumnStats from './ColumnStats';
+@@ -245,6 +247,7 @@ const ColumnList: React.FC<ColumnListProps> = ({
+   const formatColumnData = (item, index) => {
+     const hasItemStats = !!item.stats.length;
+     return {
++      stats: hasItemStats ? item.stats : null,
+       content: {
+         title: item.name,
+         description: item.description,
+@@ -259,7 +262,6 @@ const ColumnList: React.FC<ColumnListProps> = ({
+       children: item.children,
+       sort_order: item.sort_order,
+       usage: getUsageStat(item),
+-      stats: hasItemStats ? item.stats : null,
+       badges: hasColumnBadges ? item.badges : [],
+       action: {
+         name: item.name,
+@@ -302,6 +304,8 @@ const ColumnList: React.FC<ColumnListProps> = ({
+     ? orderedData
+     : flattenData(orderedData);
+ 
++  const STATS_COLUMN_WIDTH = 24;
++
+   flattenedData.forEach((item, index) => {
+     if (item.name === selectedColumn) {
+       selectedIndex = index;
+@@ -309,6 +313,18 @@ const ColumnList: React.FC<ColumnListProps> = ({
+   });
+ 
+   let formattedColumns: ReusableTableColumn[] = [
++    {
++      title: '',
++      field: 'stats',
++      width: STATS_COLUMN_WIDTH,
++      horAlign: TextAlignmentValues.left,
++      component: (stats) => {
++        if (stats != null && stats.length > 0) {
++          return <GraphIcon />;
++        }
++        return null;
++      },
++    },
+     {
+       title: 'Name',
+       field: 'content',
+diff --git a/frontend/amundsen_application/static/js/utils/index.spec.ts b/frontend/amundsen_application/static/js/utils/index.spec.ts
+index e77a07aa..ebc318b2 100644
+--- a/frontend/amundsen_application/static/js/utils/index.spec.ts
++++ b/frontend/amundsen_application/static/js/utils/index.spec.ts
+@@ -694,12 +694,21 @@ describe('stats utils', () => {
+       expect(actual).toEqual(expected);
+     });
+ 
+-    it('generates correct when no dates are given', () => {
++    it('generates correct info text when no dates are given', () => {
+       const expected = `Stats reflect data collected over a recent period of time.`;
+       const actual = StatUtils.getStatsInfoText();
+ 
+       expect(actual).toEqual(expected);
+     });
++
++    it('generates correct info text when only endEpoch is given', () => {
++      const startEpoch = 0;
++      const endEpoch = 1571616000;
++      const expected = `Stats reflect data collected until Oct 21, 2019.`;
++      const actual = StatUtils.getStatsInfoText(startEpoch, endEpoch);
++
++      expect(actual).toEqual(expected);
++    });
+   });
+ });
+ 
+diff --git a/frontend/amundsen_application/static/js/utils/stats.ts b/frontend/amundsen_application/static/js/utils/stats.ts
+index 89990ba1..f0cb6caa 100644
+--- a/frontend/amundsen_application/static/js/utils/stats.ts
++++ b/frontend/amundsen_application/static/js/utils/stats.ts
+@@ -79,6 +79,8 @@ export const getStatsInfoText = (startEpoch?: number, endEpoch?: number) => {
+     } else {
+       infoText = `${infoText} between ${startDate} and ${endDate}.`;
+     }
++  } else if (endDate && startDate == null) {
++    infoText = `${infoText} until ${endDate}.`;
+   } else {
+     infoText = `${infoText} over a recent period of time.`;
+   }
+diff --git a/frontend/setup.py b/frontend/setup.py
+index 938d20e6..33bc1799 100644
+--- a/frontend/setup.py
++++ b/frontend/setup.py
+@@ -45,7 +45,7 @@ requirements_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'r
+ with open(requirements_path) as requirements_file:
+     requirements_dev = requirements_file.readlines()
+ 
+-__version__ = '4.0.1'
++__version__ = '4.1.0'
+ 
+ jira = ['jira==3.0.1']
+ asana = ['asana==0.10.3']
+diff --git a/metadata/Makefile b/metadata/Makefile
+index d6c33c9a..0657c684 100644
+--- a/metadata/Makefile
++++ b/metadata/Makefile
+@@ -1,5 +1,6 @@
+ IMAGE := amundsendev/amundsen-metadata
+ OIDC_IMAGE := ${IMAGE}-oidc
++GREMLIN_IMAGE := ${IMAGE}-gremlin
+ VERSION:= $(shell grep -m 1 '__version__' setup.py | cut -d '=' -f 2 | tr -d "'" | tr -d '[:space:]')
+ 
+ .PHONY: clean
+@@ -56,7 +57,10 @@ push-oidc-image:
+ 	docker push ${OIDC_IMAGE}:${VERSION}
+ 	docker push ${OIDC_IMAGE}:latest
+ 
+-
++.PHONY: gremlin-image
++gremlin-image:
++	cd .. && docker build -f Dockerfile.metadata.public --target=gremlin-release -t ${GREMLIN_IMAGE}:${VERSION} . && cd metadata
++	docker tag ${GREMLIN_IMAGE}:${VERSION} ${GREMLIN_IMAGE}:latest
+ 
+ .PHONY: build-push-image
+ build-push-image-latest: image oidc-image push-image push-oidc-image
+diff --git a/metadata/metadata_service/__init__.py b/metadata/metadata_service/__init__.py
+index 63bb3d5d..e158537e 100644
+--- a/metadata/metadata_service/__init__.py
++++ b/metadata/metadata_service/__init__.py
+@@ -91,10 +91,13 @@ def create_app(*, config_module_class: str) -> Flask:
+     app.config.from_object(config_module_class)
+ 
+     if app.config.get('LOG_CONFIG_FILE'):
++        logging.info("Set LOG_LEVEL to INFO")
+         logging.config.fileConfig(app.config.get('LOG_CONFIG_FILE'), disable_existing_loggers=False)
+     else:
+         logging.basicConfig(format=app.config.get('LOG_FORMAT'), datefmt=app.config.get('LOG_DATE_FORMAT'))
+-        logging.getLogger().setLevel(app.config.get('LOG_LEVEL'))
++        # logging.getLogger().setLevel(app.config.get('LOG_LEVEL'))
++        logging.getLogger().setLevel("INFO")
++        logging.info("LOG_LEVEL set to INFO")
+     logging.info('Created app with config name {}'.format(config_module_class))
+     logging.info('Using backend {}'.format(app.config.get('PROXY_CLIENT')))
+ 
+diff --git a/metadata/metadata_service/api/user.py b/metadata/metadata_service/api/user.py
+index d8d31b7a..7742007c 100644
+--- a/metadata/metadata_service/api/user.py
++++ b/metadata/metadata_service/api/user.py
+@@ -15,6 +15,7 @@ from flasgger import swag_from
+ from flask import current_app as app
+ from flask import request
+ from flask_restful import Resource
++from flask import session
+ from marshmallow.exceptions import ValidationError as SchemaValidationError
+ 
+ from metadata_service.api import BaseAPI
+diff --git a/metadata/metadata_service/proxy/gremlin_proxy.py b/metadata/metadata_service/proxy/gremlin_proxy.py
+index 70c5553f..29beb0ab 100644
+--- a/metadata/metadata_service/proxy/gremlin_proxy.py
++++ b/metadata/metadata_service/proxy/gremlin_proxy.py
+@@ -1015,7 +1015,29 @@ class AbstractGremlinProxy(BaseProxy):
+         return user
+ 
+     def create_update_user(self, *, user: User) -> Tuple[User, bool]:
+-        pass
++        with self.query_executor() as executor:
++            return self._create_update_user(user=user, executor=executor)
++
++    def _create_update_user(self, *, user: User, executor: ExecuteQuery) -> None:
++        LOGGER.info(f"Upserting user with id: {user.user_id}")
++        _upsert(
++            executor=executor,
++            g=self.g,
++            label=VertexTypes.User,
++            key=user.user_id,
++            key_property_name=self.key_property_name,
++            email=user.email,
++            first_name=user.first_name,
++            last_name=user.last_name,
++            full_name=user.full_name,
++            is_active=user.is_active,
++            github_username=user.github_username,
++            team_name=user.team_name,
++            slack_id=user.slack_id,
++            employee_type=user.employee_type,
++            profile_url=user.profile_url,
++            role_name=user.role_name
++        )
+ 
+     @timer_with_counter
+     @overrides
+@@ -1180,7 +1202,6 @@ class AbstractGremlinProxy(BaseProxy):
+ 
+         readers = []
+         for result in results:
+-            # no need for _safe_get in here because the query
+             readers.append(Reader(
+                 user=User(user_id=result['user']['id'], email=result['user']['email']),
+                 read_count=int(result['read'])))
+diff --git a/metadata/setup.py b/metadata/setup.py
+index 8b7d5700..59bee577 100644
+--- a/metadata/setup.py
++++ b/metadata/setup.py
+@@ -27,8 +27,8 @@ rds = ['amundsen-rds==0.0.6',
+        'alembic>=1.2,<2.0']
+ gremlin = [
+     'amundsen-gremlin>=0.0.9',
+-    'gremlinpython==3.4.3',
+-    'gremlinpython==3.4.3'
++    'gremlinpython==3.4.12',
++    'tornado==4.5.3'
+ ]
+ all_deps = requirements + requirements_common + requirements_dev + oidc + atlas + rds + gremlin
+ 
+diff --git a/metadata/tests/unit/proxy/roundtrip/abstract_proxy_tests.py b/metadata/tests/unit/proxy/roundtrip/abstract_proxy_tests.py
+index c16674ef..d225ae24 100644
+--- a/metadata/tests/unit/proxy/roundtrip/abstract_proxy_tests.py
++++ b/metadata/tests/unit/proxy/roundtrip/abstract_proxy_tests.py
+@@ -175,6 +175,18 @@ class AbstractProxyTest(ABC, Generic[T], unittest.TestCase):
+                                                                                    relation_type=UserResourceRel.read)
+         self.assertEqual(0, len(res2['table']))
+ 
++    def test_create_update_user(self):
++        user = Fixtures.next_user()
++        self.get_proxy().create_update_user(user=user)
++        res = self.get_proxy().get_user(id=user.user_id)
++        self.assertEqual(user.user_id, res.user_id)
++
++        # Check if updating an existing user works as expected
++        user.full_name = "new name"
++        self.get_proxy().create_update_user(user=user)
++        res = self.get_proxy().get_user(id=user.user_id)
++        self.assertEqual("new name", res.full_name)
++
+     def test_owner_rt(self) -> None:
+         application = Fixtures.next_application()
+         self.get_proxy().put_app(data=application)
+@@ -239,6 +251,7 @@ def class_getter_closure() -> Callable[[], Type[AbstractProxyTest]]:  # noqa: F8
+ 
+     def abstract_proxy_test_class() -> Type[AbstractProxyTest]:  # noqa: F821
+         return the_class
++
+     return abstract_proxy_test_class
+ 
+ 
+diff --git a/requirements-common.txt b/requirements-common.txt
+index 7dac6d88..f0f05f35 100644
+--- a/requirements-common.txt
++++ b/requirements-common.txt
+@@ -13,8 +13,10 @@ flasgger==0.9.5
+ Flask==1.0.2
+ Flask-RESTful>=0.3.6
+ flask-cors==3.0.8
+-Jinja2>=2.10.1
++Jinja2>=2.10.1,<=2.11.3
+ jsonschema>=3.0.1,<4.0
++itsdangerous<=2.0.1
++MarkupSafe==2.0.1
+ marshmallow>=3.0,<=3.6
+ marshmallow3-annotations>=1.0.0
+ pytz==2021.1
+diff --git a/search/search_service/proxy/es_search_proxy.py b/search/search_service/proxy/es_search_proxy.py
+index f5e69176..67229366 100644
+--- a/search/search_service/proxy/es_search_proxy.py
++++ b/search/search_service/proxy/es_search_proxy.py
+@@ -238,7 +238,12 @@ class ElasticsearchProxy():
+ 
+         for r in responses:
+             if r.success():
+-                results_count = r.hits.total.value
++                # This is to support ESv7.x, and newer version of elasticsearch_dsl
++                if isinstance(r.hits.total, AttrDict):
++                    results_count = r.hits.total.value
++                else:
++                    results_count = r.hits.total
++
+                 if results_count > 0:
+                     resource_type = r.hits.hits[0]._type
+                     results = []
+@@ -339,7 +344,12 @@ class ElasticsearchProxy():
+ 
+         response = response[0]
+         if response.success():
+-            results_count = response.hits.total.value
++            # This is to support ESv7.x, and newer version of elasticsearch_dsl
++            if isinstance(response.hits.total, AttrDict):
++                results_count = response.hits.total.value
++            else:
++                results_count = response.hits.total
++
+             if results_count == 1:
+                 es_result = response.hits.hits[0]
+                 return es_result

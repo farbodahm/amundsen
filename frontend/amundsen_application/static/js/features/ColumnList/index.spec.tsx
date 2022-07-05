@@ -133,6 +133,15 @@ describe('ColumnList', () => {
         expect(actual).toEqual(expected);
       });
 
+      it('should show column statistics icon', () => {
+        const { wrapper } = setup({ columns });
+
+        const expected = columns.length;
+        const actual = wrapper.find('GraphIcon').length;
+
+        expect(actual).toEqual(expected);
+      });
+
       describe('when usage sorting is passed', () => {
         it('should sort the data by that value', () => {
           const { wrapper } = setup({

@@ -1,0 +1,9 @@
+diff a/frontend/amundsen_application/static/js/components/EditableText/styles.scss b/frontend/amundsen_application/static/js/components/EditableText/styles.scss	(rejected hunks)
+@@ -8,6 +8,7 @@
+   .markdown-wrapper {
+     font-size: 14px;
+     word-break: break-word;
++    white-space: break-spaces;
+   }
+ 
+   .edit-link {

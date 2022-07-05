@@ -1,0 +1,10 @@
+diff a/frontend/amundsen_application/api/search/v1.py b/frontend/amundsen_application/api/search/v1.py	(rejected hunks)
+@@ -129,7 +132,7 @@ def _search_resources(*, search_term: str,
+                                   headers={'Content-Type': 'application/json'},
+                                   method='POST',
+                                   data=request_json)
+-        LOGGER.info(response.json())
++        LOGGER.info(f"Search request response JSON: {response.json()}")
+         status_code = response.status_code
+ 
+         if status_code == HTTPStatus.OK:
