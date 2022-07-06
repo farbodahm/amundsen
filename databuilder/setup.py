@@ -4,7 +4,7 @@ import os
 
 from setuptools import find_packages, setup
 
-__version__ = '6.4.6'
+__version__ = '6.5.0'
 
 requirements_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'requirements.txt')
 with open(requirements_path) as requirements_file:
@@ -56,9 +56,9 @@ spark = [
 ]
 
 neptune = [
-    'amundsen-gremlin>=0.0.9',
+    'amundsen-gremlin>=0.0.12',
     'Flask==1.0.2',
-    'gremlinpython==3.4.3',
+    'gremlinpython==3.4.12',
     'requests-aws4auth==1.1.0',
     'typing-extensions==3.7.4',
     'overrides==2.5',
