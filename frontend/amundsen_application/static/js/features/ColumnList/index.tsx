@@ -29,6 +29,8 @@ import { buildTableKey, TablePageParams } from 'utils/navigationUtils';
 
 import { GraphIcon } from 'components/SVGIcons/GraphIcon';
 
+import { GraphIcon } from 'components/SVGIcons/GraphIcon';
+
 import ColumnType from './ColumnType';
 import {
   BLOCKQUOTE_MARKDOWN_TYPE,
@@ -194,7 +196,21 @@ const ColumnList: React.FC<ColumnListProps> = ({
     tableKey = buildTableKey(orderedData[0].tableParams);
   }
 
+  const STATS_COLUMN_WIDTH = 24;
+
   let formattedColumns: ReusableTableColumn[] = [
+    {
+      title: '',
+      field: 'stats',
+      width: STATS_COLUMN_WIDTH,
+      horAlign: TextAlignmentValues.left,
+      component: (stats) => {
+        if (stats != null && stats.length > 0) {
+          return <GraphIcon />;
+        }
+        return null;
+      },
+    },
     {
       title: 'Name',
       field: 'content',

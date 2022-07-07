@@ -293,6 +293,7 @@ describe('ColumnList', () => {
 
         expect(iconElementLength).toEqual(expectedLength);
         expect(overlayTriggerLength).toEqual(expectedLength);
+
       });
 
       describe('when usage sorting is passed', () => {

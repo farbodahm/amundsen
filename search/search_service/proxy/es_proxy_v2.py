@@ -309,7 +309,12 @@ class ElasticsearchProxyV2():
 
         response = response[0]
         if response.success():
-            results_count = response.hits.total.value
+            # This is to support ESv7.x, and newer version of elasticsearch_dsl
+            if isinstance(response.hits.total, AttrDict):
+                results_count = response.hits.total.value
+            else:
+                results_count = response.hits.total
+
             if results_count == 1:
                 es_result = response.hits.hits[0]
                 return es_result
