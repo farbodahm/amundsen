@@ -18,7 +18,7 @@ from elasticsearch_dsl import (
 )
 from elasticsearch_dsl.query import MultiMatch
 from elasticsearch_dsl.response import Response
-from elasticsearch_dsl.utils import AttrList
+from elasticsearch_dsl.utils import AttrList, AttrDict
 from werkzeug.exceptions import InternalServerError
 
 from search_service.proxy.es_proxy_utils import Resource, create_search_response

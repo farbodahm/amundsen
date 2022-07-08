@@ -29,8 +29,6 @@ import { buildTableKey, TablePageParams } from 'utils/navigationUtils';
 
 import { GraphIcon } from 'components/SVGIcons/GraphIcon';
 
-import { GraphIcon } from 'components/SVGIcons/GraphIcon';
-
 import ColumnType from './ColumnType';
 import {
   BLOCKQUOTE_MARKDOWN_TYPE,
