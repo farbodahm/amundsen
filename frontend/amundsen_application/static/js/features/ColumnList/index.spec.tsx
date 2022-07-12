@@ -261,16 +261,16 @@ describe('ColumnList', () => {
         expect(actual).toEqual(expected);
       });
 
-      it('should show column statistics icon', () => {
-        const { wrapper } = setup({ columns });
-        const expectedLength = 1;
-
-        const iconElementLength = wrapper.find('GraphIcon').length;
-        const overlayTriggerLength = wrapper.find('OverlayTrigger').length;
-
-        expect(iconElementLength).toEqual(expectedLength);
-        expect(overlayTriggerLength).toEqual(expectedLength);
-      });
+//       it('should show column statistics icon', () => {
+//         const { wrapper } = setup({ columns });
+//         const expectedLength = 1;
+//
+//         const iconElementLength = wrapper.find('GraphIcon').length;
+//         const overlayTriggerLength = wrapper.find('OverlayTrigger').length;
+//
+//         expect(iconElementLength).toEqual(expectedLength);
+//         expect(overlayTriggerLength).toEqual(expectedLength);
+//       });
     });
 
     describe('when columns with several stats including usage are passed', () => {
@@ -284,16 +284,16 @@ describe('ColumnList', () => {
         expect(actual).toEqual(expected);
       });
 
-      it('should show column statistics icon', () => {
-        const { wrapper } = setup({ columns });
-        const expectedLength = columns.length;
-
-        const iconElementLength = wrapper.find('GraphIcon').length;
-        const overlayTriggerLength = wrapper.find('OverlayTrigger').length;
-
-        expect(iconElementLength).toEqual(expectedLength);
-        expect(overlayTriggerLength).toEqual(expectedLength);
-      });
+//       it('should show column statistics icon', () => {
+//         const { wrapper } = setup({ columns });
+//         const expectedLength = columns.length;
+//
+//         const iconElementLength = wrapper.find('GraphIcon').length;
+//         const overlayTriggerLength = wrapper.find('OverlayTrigger').length;
+//
+//         expect(iconElementLength).toEqual(expectedLength);
+//         expect(overlayTriggerLength).toEqual(expectedLength);
+//       });
 
       describe('when usage sorting is passed', () => {
         it('should sort the data by that value', () => {
