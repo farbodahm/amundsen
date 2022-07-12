@@ -159,7 +159,7 @@ expected_openapi_3_tables = [
     ),
 ]
 
-test_schema_json_draft_4 = {
+test_schema_json_draft_4: dict = {
     "$schema": "http://json-schema.org/draft-04/schema#",
     "$id": "http://example.com/example.json",
     "type": "object",
