@@ -7,9 +7,7 @@ from typing import (
 )
 
 from gremlin_python.process.graph_traversal import GraphTraversalSource, __
-from gremlin_python.process.traversal import (
-    Order, TextP,
-)
+from gremlin_python.process.traversal import Order, TextP
 from pyhocon import ConfigTree
 
 from databuilder import Scoped
