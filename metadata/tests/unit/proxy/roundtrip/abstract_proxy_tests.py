@@ -175,7 +175,7 @@ class AbstractProxyTest(ABC, Generic[T], unittest.TestCase):
                                                                                    relation_type=UserResourceRel.read)
         self.assertEqual(0, len(res2['table']))
 
-    def test_create_update_user(self):
+    def test_create_update_user(self) -> None:
         user = Fixtures.next_user()
         self.get_proxy().create_update_user(user=user)
         res = self.get_proxy().get_user(id=user.user_id)

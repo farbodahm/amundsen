@@ -52,11 +52,6 @@ from gremlin_python.process.traversal import (Direction, Order, P, T, TextP,
                                               Traversal, gte, not_, within,
                                               without)
 from gremlin_python.structure.graph import Path
-from neptune_python_utils.gremlin_utils import ExtendedGraphSONSerializersV3d0
-from overrides import overrides
-from tornado import httpclient
-from typing_extensions import Protocol  # TODO: it's in typing 3.8
-
 from metadata_service.entity.dashboard_detail import \
     DashboardDetail as DashboardDetailEntity
 from metadata_service.entity.description import Description
@@ -64,6 +59,10 @@ from metadata_service.entity.tag_detail import TagDetail
 from metadata_service.exception import NotFoundException
 from metadata_service.proxy.statsd_utilities import timer_with_counter
 from metadata_service.util import UserResourceRel
+from neptune_python_utils.gremlin_utils import ExtendedGraphSONSerializersV3d0
+from overrides import overrides
+from tornado import httpclient
+from typing_extensions import Protocol  # TODO: it's in typing 3.8
 
 from .base_proxy import BaseProxy
 from .shared import checkNotNone, retrying
@@ -932,7 +931,8 @@ class AbstractGremlinProxy(BaseProxy):
         ...except if you are doing graph management or other things not supported by Gremlin.  For example, with
         JanusGraph, you might:
 
-        >>> self._submit('''
+        >>> self._submit(
+        '''
         graph.tx().rollback()
         mgmt = graph.openManagement()
         keyProperty = mgmt.getPropertyKey('_key')
@@ -941,15 +941,18 @@ class AbstractGremlinProxy(BaseProxy):
         mgmt.commit()
         ''')
 
-        >>> self._submit('''
+        >>> self._submit(
+        '''
         graph.openManagement().getGraphIndex('TableByKey')
         ''')
 
-        >>> self._submit('''
+        >>> self._submit(
+        '''
         graph.openManagement().getGraphIndexes(Vertex.class)
         ''')
 
-        >>> self._submit('''
+        >>> self._submit(
+        '''
         graph.openManagement().getGraphIndexes(Edge.class)
         ''')
 
@@ -1019,9 +1022,9 @@ class AbstractGremlinProxy(BaseProxy):
         with self.query_executor() as executor:
             return self._create_update_user(user=user, executor=executor)
 
-    def _create_update_user(self, *, user: User, executor: ExecuteQuery) -> None:
+    def _create_update_user(self, *, user: User, executor: ExecuteQuery) -> Tuple[User, bool]:
         LOGGER.info(f"Upserting user with id: {user.user_id}")
-        _upsert(
+        return _upsert(
             executor=executor,
             g=self.g,
             label=VertexTypes.User,
