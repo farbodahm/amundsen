@@ -53,6 +53,11 @@ from gremlin_python.process.traversal import (Direction, Order, P, T, TextP,
                                               Traversal, gte, not_, within,
                                               without)
 from gremlin_python.structure.graph import Path
+from neptune_python_utils.gremlin_utils import ExtendedGraphSONSerializersV3d0
+from overrides import overrides
+from tornado import httpclient
+from typing_extensions import Protocol  # TODO: it's in typing 3.8
+
 from metadata_service import config
 from metadata_service.entity.dashboard_detail import \
     DashboardDetail as DashboardDetailEntity
@@ -63,10 +68,6 @@ from metadata_service.entity.tag_detail import TagDetail
 from metadata_service.exception import NotFoundException
 from metadata_service.proxy.statsd_utilities import timer_with_counter
 from metadata_service.util import UserResourceRel
-from neptune_python_utils.gremlin_utils import ExtendedGraphSONSerializersV3d0
-from overrides import overrides
-from tornado import httpclient
-from typing_extensions import Protocol  # TODO: it's in typing 3.8
 
 from .base_proxy import BaseProxy
 from .shared import checkNotNone, retrying
