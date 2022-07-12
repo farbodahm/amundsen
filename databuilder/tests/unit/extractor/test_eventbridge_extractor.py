@@ -16,7 +16,7 @@ from databuilder.models.table_metadata import ColumnMetadata, TableMetadata
 
 registry_name = "TestAmundsen"
 
-test_schema_openapi_3 = {
+test_schema_openapi_3: dict = {
     "openapi": "3.0.0",
     "info": {"version": "1.0.0", "title": "OrderConfirmed"},
     "paths": {},
@@ -442,7 +442,7 @@ class TestEventBridgeExtractor(unittest.TestCase):
 
     def test_get_property_type(self) -> None:
         for property_type, expected_property_type in zip(
-            property_types, expected_property_types
+                property_types, expected_property_types
         ):
             self.assertEqual(
                 EventBridgeExtractor._get_property_type(property_type),
