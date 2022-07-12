@@ -179,13 +179,15 @@ class AbstractProxyTest(ABC, Generic[T], unittest.TestCase):
         user = Fixtures.next_user()
         self.get_proxy().create_update_user(user=user)
         res = self.get_proxy().get_user(id=user.user_id)
-        self.assertEqual(user.user_id, res.user_id)
+        if res:
+            self.assertEqual(user.user_id, res.user_id)
 
         # Check if updating an existing user works as expected
         user.full_name = "new name"
         self.get_proxy().create_update_user(user=user)
         res = self.get_proxy().get_user(id=user.user_id)
-        self.assertEqual("new name", res.full_name)
+        if res:
+            self.assertEqual("new name", res.full_name)
 
     def test_owner_rt(self) -> None:
         application = Fixtures.next_application()
