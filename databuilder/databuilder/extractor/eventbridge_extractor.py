@@ -23,7 +23,7 @@ class EventBridgeExtractor(Extractor):
     REGION_NAME_KEY = "region_name"
     REGISTRY_NAME_KEY = "registry_name"
     DEFAULT_CONFIG = ConfigFactory.from_dict(
-        {REGION_NAME_KEY: "us-east-1", REGISTRY_NAME_KEY: "aws.events",}
+        {REGION_NAME_KEY: "us-east-1", REGISTRY_NAME_KEY: "aws.events"}
     )
 
     def init(self, conf: ConfigTree) -> None:
